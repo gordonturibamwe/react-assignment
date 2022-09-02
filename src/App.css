@@ -1,38 +1,111 @@
-.App {
+
+trix-toolbar .trix-button--icon::before {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0.6;
+  content: "";
+  background-position: center;
+  background-repeat: no-repeat;
+}
+trix-toolbar .trix-button--icon-attach-image::before {
+  content: "+ Attach Image";
+  position: absolute;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(0,0,0,0.6);
+  display: inline-block;
+  top: 5px;
+  right: 0;
+  bottom: 0;
+  left: 4px;
+  font-weight: 600;
   text-align: center;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+trix-toolbar .trix-button--icon-attach-image {
+  width: 107px;
+  position: relative;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+
+trix-toolbar .trix-button--icon-emoji::before {
+  background-image: url(https://cdn-icons-png.flaticon.com/128/742/742750.png);
+  content: "";
+  width: 17px;
+  height: 17px;
+  left: 7px;
+  top: 5px;
+  position: absolute;
+  background-position: center;
+  background-size: contain;
+}
+.trix-button--icon-emoji::after {
+  content: "Insert emoji";
+  position: absolute;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(0,0,0,0.6);
+  display: inline-block;
+  top: 5px;
+  right: 0;
+  bottom: 0;
+  left: 20px;
+  font-weight: 600;
+}
+trix-toolbar .trix-button--icon-emoji {
+  width: 110px;
+  position: relative;
+  border-left: 1px solid #e5e7eb;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+trix-toolbar .trix-button--icon::before {
+  background-size: 17px;
+}
+trix-toolbar .trix-button-group {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  margin-bottom: 10px;
+  border: 1px solid #e5e7eb;
+  border-top-color: #e5e7eb;
+  border-bottom-color: #e5e7eb;
+  border-radius: 3px;
 }
-
-.App-link {
-  color: #61dafb;
+trix-toolbar .trix-button {
+  border-bottom: 0px solid #ddd;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+trix-toolbar .trix-button:not(:first-child) {
+  border-left: 1px solid #e5e7eb;
+}
+trix-editor {
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  margin: 0;
+  padding: 0.4em 0.6em;
+  min-height: 5em;
+  outline: none;
+}
+trix-editor:empty:not(:focus)::before {
+  content: attr(placeholder);
+  color: #9ea5b1;
+  cursor: text;
+  pointer-events: none;
+  white-space: pre-line;
+  font-size: 0.875rem;
+}
+.emoji-picker-react input.emoji-search {
+  padding: 5px 10px;
+}
+trix-editor div, trix-editor pre {
+  display: inline;
+}
+trix-editor pre {
+  background-color: #e5e7eb;
+  display: inline-block;
+  padding: 1px 3px;
+  font-size: 80%;
+  border-radius: 3px;
+  color: #717171;
+  margin: auto 3px;
 }
