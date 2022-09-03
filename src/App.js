@@ -11,20 +11,20 @@ import Post from "./version_1/pages/Post";
 
 export const AppContext = createContext({});
 function App() {
-  const [currentUser, setCurrentUser] = useState(true);
-  const [open, setOpen] = useState(false); // For opening and closing group modal form
+  const [currentUser, setCurrentUser] = useState(true); // Used for authorization when the user is logged in
+  const [open, setOpen] = useState(false); // For opening and closing group modal form <GroupFormModal/>
 
   return(
     <AppContext.Provider value={{currentUser, setCurrentUser, open, setOpen}}>
-      {currentUser && <Nav/>}
+      {currentUser && <Nav/> /* Show Nav when user is logged in */}
       <BrowserRouter>
         <Routes>
           {!currentUser && <Route path="/" element={<Login/>}/>}
           {!currentUser && <Route path="/register" element={<Register/>}/>}
-          <Route element={<ProtectedRoutes/>}>
-            <Route path="/" element={<Groups />} />
-            <Route path="/group/:id" element={<Group />} />
-            <Route path="/post/:id" element={<Post />} />
+          <Route element={<ProtectedRoutes/> /* Routes beneath can only be accessed when ProtectedRoutes returns true */}>
+            <Route path="/" element={<Groups />}/>
+            <Route path="/group/:id" element={<Group />}/>
+            <Route path="/post/:id" element={<Post />}/>
           </Route>
         </Routes>
       </BrowserRouter>
