@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLayerGroup } from '@fortawesome/free-solid-svg-icons'
 import { AppContext } from '../../App';
 import { post } from '../helpers/apiCallsHelper';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Register.js page registers new user.
 // If user registration is successful, user is redirected to the groups page
@@ -12,14 +12,20 @@ export default function Register() {
   const usernameRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
+  const repeatPasswordRef = useRef(null);
   const {setAlerts, setNotices} = useContext(AppContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate('/register', {replace: true});
+    // navigate('/register', {replace: true});
   }, []);
 
   function registerAccount(event) {
+    event.preventDefault();
+    if(passwordRef.current.value !== repeatPasswordRef.current.value) {
+      setAlerts(arr => ['Password does not match']);
+      return;
+    }
     post({
       url: "http://localhost:3000/api/v1/user-registration",
       headers: {headers: {'Content-Type': 'application/json', 'Content-Type':'multipart/form-data'}},
@@ -38,7 +44,6 @@ export default function Register() {
         setAlerts(arr => response.data.errors); // Display errors if registration is unsuccessful
       }
     });
-    event.preventDefault()
   }
 
   return (
@@ -90,12 +95,27 @@ export default function Register() {
                 <input
                   id="password"
                   name="password"
-                  ref={passwordRef}
+                  ref={repeatPasswordRef}
                   type="password"
                   autoComplete="current-password"
                   required
-                  className="relative block w-full appearance-none rounded-none rounded-b-[4px] border border-gray-300 px-3 py-4 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
+                  className="relative block w-full appearance-none rounded-none border border-gray-300 px-3 py-4 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
                   placeholder="Password"
+                />
+              </div>
+              <div>
+                <label htmlFor="repeat-password" className="sr-only">
+                  Repeat Password
+                </label>
+                <input
+                  id="repeatPassword"
+                  name="repeat-password"
+                  ref={passwordRef}
+                  type="password"
+                  autoComplete="repeat-password"
+                  required
+                  className="relative block w-full appearance-none rounded-none rounded-b-[4px] border border-gray-300 px-3 py-4 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
+                  placeholder="Repeat Password"
                 />
               </div>
             </div>
@@ -114,9 +134,7 @@ export default function Register() {
                   <span className="bg-gray-50 px-2 text-gray-400">OR</span>
                 </div>
               </div>
-              <a href="/" className="font-normal text-gray-500 hover:text-green-500 w-full text-center block mt-4">
-                Login to your Account
-              </a>
+              <Link to='/login' className="font-normal text-gray-500 hover:text-green-500 w-full text-center block mt-4">Login to your Account</Link>
             </div>
           </form>
         </div>

@@ -1,13 +1,14 @@
 import React, { createContext, createRef, useContext, useLayoutEffect, useState } from 'react'
 import { useRef } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AppContext } from '../../App';
 import GroupFormModal from '../components/GroupFormModal';
 import Nav from '../components/Nav';
 import { get } from '../helpers/apiCallsHelper';
+import Login from './Login';
 
 export default function Groups() {
-  const {setCurrentUser, setuserLoggedIn, setAlerts} = useContext(AppContext);
+  const {setCurrentUser, setuserLoggedIn, setAlerts, userLoggedIn, currentUser} = useContext(AppContext);
   const navigate = useNavigate();
   const filterButtonRefs = useRef([]);
   const location = useLocation();
@@ -15,21 +16,25 @@ export default function Groups() {
   const [open, setOpen] = useState(false); // for group modal form
 
   useLayoutEffect(() => {
-    console.log('---', localStorage.getItem('token'));
-    get({
-      url: "http://localhost:3000/api/v1/current-user",
-      headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
-    }).then(response => {
-      console.log(response, response.status);
-      if(response.status == 200) {
-        setCurrentUser(response.data);
-        setuserLoggedIn(true);
-      } else {
-        setAlerts(arr => response.data.errors);
-        localStorage.removeItem("token")
-        navigate('/login', {replace: true});
-      }
-    });
+    // if(!userLoggedIn) {
+    //   setAlerts(arr => ['Please login to continue.']);
+    //   localStorage.removeItem("token")
+    //   navigate('/login', {replace: true});
+    // }
+    // get({
+    //   url: "http://localhost:3000/api/v1/current-user",
+    //   headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
+    // }).then(response => {
+    //   console.log(response, response.status);
+    //   if(response.status == 200) {
+    //     setCurrentUser(response.data);
+    //     setuserLoggedIn(true);
+    //   } else {
+    //     setAlerts(arr => response.data.errors);
+    //     localStorage.removeItem("token")
+    //     navigate('/login', {replace: true});
+    //   }
+    // });
   }, []);
 
 
@@ -44,7 +49,7 @@ export default function Groups() {
   }
 
   return (
-    <AppContext.Provider value={{open, setOpen}}>
+    <div>
       <Nav/>
       <GroupFormModal/>
       <div className="max-w-4xl mx-auto  px-4 sm:px-6 lg:px-8 flex">
@@ -57,13 +62,13 @@ export default function Groups() {
               <button onClick={(event) => filterByNavigation(event, '/?q=where-am-member')} ref={filterButtonRefs.current[2]} className="-ml-px relative inline-flex items-center px-4 py-2 rounded-r-[4px] border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-0 ">Where I am member</button>
             </span>
 
-            <button onClick={() => setOpen(true)} className="rounded-[4px]  px-4 py-2 bg-green-600 hover:bg-green-700 border-green-800 text-white block text-sm font-medium shadow-sm">+ New Group </button>
+            <button onClick={() => setOpen(true)} className="rounded-[4px]  px-4 py-2 bg-green-600 hover:bg-green-700 border-green-800 text-white block text-sm font-medium shadow-sm">+ Create New Group </button>
           </div>
 
           <div className="bg-white shadow-xs overflow-hidden border rounded-md mt-6 border-gray-302">
             <ul role="list" className='w-full divide-y divide-gray-200'>
               <li id="dfdf" className="flex hover:bg-gray-50 flex-row items-center justify-between flex-basis pr-6">
-                <a href="/group/sfsfsfds" className="block hover:bg-gray-50 w-full">
+                <Link to='/group/sfsfsfds' className="block hover:bg-gray-50 w-full">
                   <div className="px-4 py-6 sm:px-6">
                     <div className="flex items-center justify-between">
                       <h1 className="font-semibold text-2xl inline-block mb-2 text-gray-600">
@@ -79,7 +84,7 @@ export default function Groups() {
                       </div>
                     </div>
                   </div>
-                </a>
+                </Link>
                 <button className="rounded-[4px] shadow-sm border border-gray-300 hover:text-gray-600 bg-white px-4 py-2 text-gray-600 block text-sm font-medium flex-none">Request to Join</button>
               </li>
               <li id="dfdf" className="flex hover:bg-gray-50 flex-row items-center justify-between flex-basis pr-6">
@@ -124,6 +129,6 @@ export default function Groups() {
           </div>
         </div>
       </div>
-    </AppContext.Provider>
+    </div>
   )
 }

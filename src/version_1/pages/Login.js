@@ -1,13 +1,18 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { AppContext } from '../../App';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLayerGroup } from '@fortawesome/free-solid-svg-icons'
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const {setCurrentUser} = useContext(AppContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // navigate('/login', {replace: true});
+  }, []);
 
   const login = (event) => {
-    console.log(event.target);
     setCurrentUser(true);
     event.preventDefault();
   }
@@ -89,9 +94,7 @@ export default function Login() {
                   <span className="bg-gray-50 px-2 text-gray-400">OR</span>
                 </div>
               </div>
-              <a href="/register" className="font-normal text-gray-500 hover:text-green-500 w-full text-center block mt-4">
-                Register Account
-              </a>
+              <Link to='/register' className="font-normal text-gray-500 hover:text-green-500 w-full text-center block mt-4">Register Account</Link>
             </div>
           </form>
         </div>
