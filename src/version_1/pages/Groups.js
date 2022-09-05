@@ -8,33 +8,29 @@ import { get } from '../helpers/apiCallsHelper';
 import Login from './Login';
 
 export default function Groups() {
-  const {setCurrentUser, setuserLoggedIn, setAlerts, userLoggedIn, currentUser} = useContext(AppContext);
+  const {setCurrentUser, setuserLoggedIn, setAlerts, userLoggedIn, currentUser, open, setOpen} = useContext(AppContext);
   const navigate = useNavigate();
   const filterButtonRefs = useRef([]);
   const location = useLocation();
   filterButtonRefs.current = [0,1,2].map((_, index) => filterButtonRefs.current[index] ?? createRef());
-  const [open, setOpen] = useState(false); // for group modal form
 
   useLayoutEffect(() => {
-    // if(!userLoggedIn) {
-    //   setAlerts(arr => ['Please login to continue.']);
-    //   localStorage.removeItem("token")
-    //   navigate('/login', {replace: true});
-    // }
-    // get({
-    //   url: "http://localhost:3000/api/v1/current-user",
-    //   headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
-    // }).then(response => {
-    //   console.log(response, response.status);
-    //   if(response.status == 200) {
-    //     setCurrentUser(response.data);
-    //     setuserLoggedIn(true);
-    //   } else {
-    //     setAlerts(arr => response.data.errors);
-    //     localStorage.removeItem("token")
-    //     navigate('/login', {replace: true});
-    //   }
-    // });
+    console.log('====', userLoggedIn);
+
+    get({
+      url: "http://localhost:3000/api/v1/current-user",
+      headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
+    }).then(response => {
+      console.log(response, response.status);
+      if(response.status == 200) {
+        setCurrentUser(response.data);
+        setuserLoggedIn(true);
+      } else {
+        setAlerts(arr => response.data.errors);
+        localStorage.removeItem("token")
+        navigate('/login', {replace: true});
+      }
+    });
   }, []);
 
 
@@ -72,7 +68,7 @@ export default function Groups() {
                   <div className="px-4 py-6 sm:px-6">
                     <div className="flex items-center justify-between">
                       <h1 className="font-semibold text-2xl inline-block mb-2 text-gray-600">
-                        My private Group is here
+                        My private Group is here {userLoggedIn}
                         <span className="px-2 ml-2 inline-flex text-xs rounded-full bg-green-100 text-green-800 mt-1">Created by You</span>
                       </h1>
                     </div>

@@ -12,8 +12,8 @@ export default function ProtectedRoutes() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('PROTEDT');
-    navigate('/login', {replace: true});
+    // console.log('PROTEDT');
+    // navigate('/login', {replace: true});
   }, []);
 
   return loading ? (

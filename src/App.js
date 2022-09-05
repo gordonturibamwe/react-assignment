@@ -45,11 +45,12 @@ function App() {
         <Routes>
           {!userLoggedIn && <Route path="/login" exact element={<Login/>}/>}
           {!userLoggedIn && <Route path="/register" exact element={<Register/>}/>}
-
-          <Route path="/" element={<Groups />}/>
-          <Route path="/group/:id" exact element={<Group />}/>
-          <Route path="/post/:id" exact element={<Post />}/>
-          <Route path="/logout" exact element={<Login />}/>
+          <Route path="/" element={<ProtectedRoutes />}>
+            <Route path="/" element={<Groups />}/>
+            <Route path="/group/:id" exact element={<Group />}/>
+            <Route path="/post/:id" exact element={<Post />}/>
+            <Route path="/logout" exact element={<Login />}/>
+          </Route>
           <Route path="/*" element={<NotFound/>}/>
         </Routes>
       </BrowserRouter>
