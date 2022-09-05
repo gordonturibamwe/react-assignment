@@ -1,7 +1,7 @@
 import React, { createContext, useLayoutEffect, useRef, useState } from 'react'
 import Trix from "trix";
 import { ReactTrixRTEInput, ReactTrixRTEToolbar } from "react-trix-rte";
-import { TOOLBAR_ACTION_OPTS } from '../helpers/constants';
+import { TOOLBAR_ACTION_OPTS } from '../helpers/constantsHelper';
 import Picker from 'emoji-picker-react';
 import '../../App.css'
 

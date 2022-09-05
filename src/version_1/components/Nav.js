@@ -4,10 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLayerGroup } from '@fortawesome/free-solid-svg-icons'
 
 export default function Nav() {
-  const {setCurrentUser} = useContext(AppContext);
+  const {setCurrentUser, setuserLoggedIn} = useContext(AppContext);
 
   const logout = (event) => {
-    setCurrentUser(false);
+    localStorage.removeItem('token');
+    setuserLoggedIn(false);
     event.preventDefault();
   }
 
@@ -19,9 +20,7 @@ export default function Nav() {
             <a href="/">
               <span className="sr-only">Logo</span>
               <FontAwesomeIcon icon={faLayerGroup} className="text-4xl text-white" />
-              {/* <img className="h-10 w-auto" src="https://tailwindui.com/img/logos/workflow-mark.svg?color=white" alt=""/> */}
             </a>
-
           </div>
           <div className="ml-10 space-x-4">
             <span className="inline-block border border-transparent py-1 px-1 text-xs font-medium text-white opacity-30 hover:bg-opacity-75">Gordon</span>

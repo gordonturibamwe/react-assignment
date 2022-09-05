@@ -1,6 +1,5 @@
-import React, { useState, useEffect, createContext } from "react";
-import axios from 'axios';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useState, createContext, useLayoutEffect } from "react";
+import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import Nav from "./version_1/components/Nav";
 import Login from "./version_1/pages/Login";
 import Register from "./version_1/pages/Register";
@@ -8,24 +7,57 @@ import Groups from "./version_1/pages/Groups";
 import ProtectedRoutes from "./version_1/components/ProtectedRoutes";
 import Group from "./version_1/pages/Group";
 import Post from "./version_1/pages/Post";
+import AlertComponent from "./version_1/components/AlertComponent";
+import NoticeComponent from "./version_1/components/NoticeComponent";
+import { get } from "./version_1/helpers/apiCallsHelper";
 
+// App.js page hold all the Routes for the entire application.
+// Before App.js loads useLayoutEffect checks to see if user is logged in using the localStorage 'token'
+// If 'token' is valid then user redirected to <Groups> page
+// If 'token' is invalid then user is redirected to <Login> page
 export const AppContext = createContext({});
 function App() {
-  const [currentUser, setCurrentUser] = useState(true); // Used for authorization when the user is logged in
+  const [currentUser, setCurrentUser] = useState({}); // Holds user data information when user is logged in
+  const [userLoggedIn, setuserLoggedIn] = useState(false); // Holds a boolean is user is logged in or not
   const [open, setOpen] = useState(false); // For opening and closing group modal form <GroupFormModal/>
+  const [alerts, setAlerts] = useState([]); // For displaying alerts <AlertComponent/>
+  const [notices, setNotices] = useState([]); // For displaying notices <NoticeComponent/>
 
-  return(
-    <AppContext.Provider value={{currentUser, setCurrentUser, open, setOpen}}>
-      {currentUser && <Nav/> /* Show Nav when user is logged in */}
+  useLayoutEffect(() => {
+    console.log('---', localStorage.getItem('token'));
+    get({
+      url: "http://localhost:3000/api/v1/current-user",
+      headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
+    }).then(response => {
+      console.log(response, response.status);
+      if(response.status == 200) {
+        setCurrentUser(response.data);
+        setuserLoggedIn(true);
+      }
+      // } else {
+      //   setAlerts(arr => response.data.errors);
+      // }
+    });
+  }, []);
+
+  return( // AppContext.Provider context holds all the applications temp states
+    <AppContext.Provider value={{currentUser, setCurrentUser, open, setOpen, alerts, setAlerts, notices, setNotices, userLoggedIn, setuserLoggedIn}}>
+      {/*userLoggedIn && <Nav/> /* Show Nav when user is logged in */}
+      {alerts.length > 0 && <AlertComponent/> /* Show Alerts */}
+      {notices.length > 0 && <NoticeComponent/> /* Show Notices */}
+
       <BrowserRouter>
         <Routes>
-          {!currentUser && <Route path="/" element={<Login/>}/>}
-          {!currentUser && <Route path="/register" element={<Register/>}/>}
-          <Route element={<ProtectedRoutes/> /* Routes beneath can only be accessed when ProtectedRoutes returns true */}>
+          {!userLoggedIn && <Route path="/login" element={<Login/>} replace/>}
+          {!userLoggedIn && <Route path="/register" element={<Register/>}/>}
+
+          {/* Routes beneath can only be accessed when userLoggedIn returns true */}
+          {/* <Route element={<ProtectedRoutes/>}> */}
             <Route path="/" element={<Groups />}/>
             <Route path="/group/:id" element={<Group />}/>
             <Route path="/post/:id" element={<Post />}/>
-          </Route>
+          {/* </Route> */}
+          {/* <Route path="/*" element={<Register/>}/> */}
         </Routes>
       </BrowserRouter>
     </AppContext.Provider>
@@ -33,50 +65,3 @@ function App() {
 }
 
 export default App;
-
-
-{/* <BrowserRouter>
-      <Routes>
-      </Routes>
-    </BrowserRouter>
-     */}
-        {/* <Route path="/" element={<LayoutComponent/>} />
-        <Route path="/group/:id" element={<UseStateComponent/>} />
-        <Route path="/post/:id" element={<UseStateComponent/>} /> */}
-        {/* <Route element={<ProtectedRoutes/>}>
-          <Route path="/user" element={<User />} />
-          <Route path="/account" element={<Account />} />
-        </Route> */}
-
-
-
-//,
-// {headers: {'Authorization': 'Bearer 39b290146bea6ce975c37cfc23'}})
-// fetch("http://localhost:3000/account-login", {
-//   credentials: 'same-origin',
-//   method: 'POST',
-//   headers: {
-//     'Accept': 'application/json',
-//     'Content-Type': 'application/json'
-//   },
-//   body: JSON.stringify({password: "mypassword", username: "$a3e7f559a95cfd"}),
-// })
-
-// const [user, setUser] = useState({});
-
-  // useEffect(() => {
-  //   axios.post("http://localhost:3000/api/v1/account-login",
-  //     {password: "111111", accountname: "$a3e7f559a95cfd"}
-  //   ).then((response) => {
-  //     const holdData = response;
-  //     setUser(holdData);
-  //     console.log(user, holdData);
-  //   });
-  // }, []);
-
-  // return (
-  //   <div className="App h-screen flex items-center bg-gray-50 flex-col justify-center">
-  //     <h1 className='font-mono font-medium'>Assignment</h1>
-  //     <h1 className='font-mono font-medium'>...</h1>
-  //   </div>
-  // );

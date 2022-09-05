@@ -1,13 +1,45 @@
-import React from 'react'
+import React, { useContext, useRef, useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLayerGroup } from '@fortawesome/free-solid-svg-icons'
+import { AppContext } from '../../App';
+import { post } from '../helpers/apiCallsHelper';
+import { useNavigate } from 'react-router-dom';
 
+// Register.js page registers new user.
+// If user registration is successful, user is redirected to the groups page
+// else user alert inforamtion  is displayed
 export default function Register() {
-  const registerAccount = (event) => {
-    console.log(event.target);
-    event.preventDefault();
-  }
+  const usernameRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const {setAlerts, setNotices} = useContext(AppContext);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    navigate('/register', {replace: true});
+  }, []);
+
+  function registerAccount(event) {
+    post({
+      url: "http://localhost:3000/api/v1/user-registration",
+      headers: {headers: {'Content-Type': 'application/json', 'Content-Type':'multipart/form-data'}},
+      formData: {
+        username: usernameRef.current.value,
+        email: emailRef.current.value,
+        password: passwordRef.current.value
+      }
+    }).then(response => {
+      if(response.status == 200){
+        console.log('---', response.headers['authorization'].split('Bearer '));
+        localStorage.setItem('token', response.headers['authorization'].split('Bearer ')[1])
+        setNotices(arr => ['Registered sucessfully.']);
+        navigate('/', {replace: true}); // redirect to <Groups/> after registration
+      } else {
+        setAlerts(arr => response.data.errors); // Display errors if registration is unsuccessful
+      }
+    });
+    event.preventDefault()
+  }
 
   return (
     <div  className="h-screen bg-gray-50">
@@ -28,6 +60,7 @@ export default function Register() {
                 <input
                   id="email-address"
                   name="username"
+                  ref={usernameRef}
                   type="text"
                   autoComplete="username"
                   required
@@ -42,6 +75,7 @@ export default function Register() {
                 <input
                   id="email-address"
                   name="email"
+                  ref={emailRef}
                   type="email"
                   autoComplete="email"
                   required
@@ -56,6 +90,7 @@ export default function Register() {
                 <input
                   id="password"
                   name="password"
+                  ref={passwordRef}
                   type="password"
                   autoComplete="current-password"
                   required
@@ -89,3 +124,36 @@ export default function Register() {
     </div>
   )
 }
+
+
+      // .then(response => console.log(response))
+    // console.log('---', resp);
+
+
+//   {
+//     "id": "98fcd573-d73b-486e-86b3-af6fff212cd6",
+//     "year": 2022,
+//     "month": 9,
+//     "username": "turibamwessss",
+//     "email": "turibamwe@outlook.comss"
+// }
+
+//   {data: {…}, status: 200, statusText: 'OK', headers: {…}, config: {…}, …}
+// config
+// :
+// {transitional: {…}, transformRequest: Array(1), transformResponse: Array(1), timeout: 0, adapter: ƒ, …}
+// data
+// :
+// {id: '98fcd573-d73b-486e-86b3-af6fff212cd6', year: 2022, month: 9, username: 'turibamwessss', email: 'turibamwe@outlook.comss'}
+// headers
+// :
+// {cache-control: 'max-age=0, private, must-revalidate', content-type: 'application/json; charset=utf-8'}
+// request
+// :
+// XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}
+// status
+// :
+// 200
+// statusText
+// :
+// "OK"

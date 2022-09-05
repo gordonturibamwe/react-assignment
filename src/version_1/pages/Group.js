@@ -4,12 +4,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCog, faTimes, faCheck, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { AppContext } from '../../App';
 import PostForm from '../components/PostForm';
+import Nav from '../components/Nav';
 
 export default function Group() {
   const [open, setOpen] = useState(false);
 
   return (
     <>
+      <Nav/>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className='grid grid-cols-4 gap-x-8 pt-6'>
           <div className='col-span-3 min-h-[350px]'>

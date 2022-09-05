@@ -1,20 +1,37 @@
-import React, { createContext, createRef, useEffect, useState } from 'react'
+import React, { createContext, createRef, useContext, useLayoutEffect, useState } from 'react'
 import { useRef } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AppContext } from '../../App';
 import GroupFormModal from '../components/GroupFormModal';
+import Nav from '../components/Nav';
+import { get } from '../helpers/apiCallsHelper';
 
 export default function Groups() {
+  const {setCurrentUser, setuserLoggedIn, setAlerts} = useContext(AppContext);
   const navigate = useNavigate();
   const filterButtonRefs = useRef([]);
   const location = useLocation();
   filterButtonRefs.current = [0,1,2].map((_, index) => filterButtonRefs.current[index] ?? createRef());
   const [open, setOpen] = useState(false); // for group modal form
 
-
-  useEffect(() => {
-    navigate('/', {replace: true});
+  useLayoutEffect(() => {
+    console.log('---', localStorage.getItem('token'));
+    get({
+      url: "http://localhost:3000/api/v1/current-user",
+      headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
+    }).then(response => {
+      console.log(response, response.status);
+      if(response.status == 200) {
+        setCurrentUser(response.data);
+        setuserLoggedIn(true);
+      } else {
+        setAlerts(arr => response.data.errors);
+        localStorage.removeItem("token")
+        navigate('/login', {replace: true});
+      }
+    });
   }, []);
+
 
   const filterByNavigation = (event, path) => {
     navigate(path, {replace: true});
@@ -28,6 +45,7 @@ export default function Groups() {
 
   return (
     <AppContext.Provider value={{open, setOpen}}>
+      <Nav/>
       <GroupFormModal/>
       <div className="max-w-4xl mx-auto  px-4 sm:px-6 lg:px-8 flex">
         <div className="w-full mx-auto pt-6">
@@ -48,7 +66,7 @@ export default function Groups() {
                 <a href="/group/sfsfsfds" className="block hover:bg-gray-50 w-full">
                   <div className="px-4 py-6 sm:px-6">
                     <div className="flex items-center justify-between">
-                      <h1 class="font-semibold text-2xl inline-block mb-2 text-gray-600">
+                      <h1 className="font-semibold text-2xl inline-block mb-2 text-gray-600">
                         My private Group is here
                         <span className="px-2 ml-2 inline-flex text-xs rounded-full bg-green-100 text-green-800 mt-1">Created by You</span>
                       </h1>
@@ -68,7 +86,7 @@ export default function Groups() {
                 <a href="/group/sfsfsfds" className="block hover:bg-gray-50 w-full">
                   <div className="px-4 py-6 sm:px-6">
                     <div className="flex items-center justify-between">
-                      <h1 class="font-semibold text-2xl inline-block mb-2 text-gray-600">
+                      <h1 className="font-semibold text-2xl inline-block mb-2 text-gray-600">
                         Juliana funs group
                       </h1>
                     </div>
@@ -87,7 +105,7 @@ export default function Groups() {
                 <a href="/group/sfsfsfds" className="block hover:bg-gray-50 w-full">
                   <div className="px-4 py-6 sm:px-6">
                     <div className="flex items-center justify-between">
-                      <h1 class="font-semibold text-2xl inline-block mb-2 text-gray-600">
+                      <h1 className="font-semibold text-2xl inline-block mb-2 text-gray-600">
                         My secret Group is here
                         <span className="px-2 ml-2 inline-flex text-xs rounded-full bg-orange-100 text-orange-800 -mt-1">Secret Group</span>
                       </h1>
