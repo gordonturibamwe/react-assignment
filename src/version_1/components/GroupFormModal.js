@@ -1,21 +1,22 @@
-import { Fragment, useContext, useEffect, useRef, useState } from 'react'
+import { Fragment, useContext, useLayoutEffect, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { AppContext } from '../../App';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { post } from '../helpers/apiCallsHelper';
 
-export default function GroupFormModal() {
+export default function GroupFormModal({...props}) {
   const {open, setOpen, setAlerts, setNotices, setuserLoggedIn, setCurrentUser} = useContext(AppContext);
   const groupNameRef = useRef(null);
   const isPublicRef = useRef(null);
   const isPrivateRef = useRef(null);
   const isSecretRef = useRef(null);
   const [groupAccess, setGroupAccess] = useState('is_public');
+  const [groupName, setGroupName] = useState('');
 
-  useEffect(() => {
-
-  });
+  useLayoutEffect(() => {
+    setGroupName(props.groupName);
+  }, []);
 
   const radioIput = (event) => {
     console.log(event.target.value);
@@ -29,6 +30,11 @@ export default function GroupFormModal() {
     event.target.nextSibling.classList.add('border-gray-300', 'bg-gray-100', 'text-gray-500');
     event.target.nextSibling.classList.remove('border-gray-300', 'bg-white', 'text-gray-500', 'hover:text-gray-500');
     setGroupAccess(event.target.value);
+  }
+
+  const updateGroupName = (event) => {
+    console.log(event.target.value, groupNameRef.current.value)
+    setGroupName(event.target.value)
   }
 
   const submitForm = (event) => {
@@ -110,7 +116,9 @@ export default function GroupFormModal() {
                         name="name"
                         type="text"
                         ref={groupNameRef}
+                        value={groupName}
                         autoComplete="name"
+                        onChange={updateGroupName}
                         required
                         className="relative flex-grow block w-full appearance-none rounded-[3px] border border-gray-300 px-3 py-3 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
                         placeholder="Group name"

@@ -1,13 +1,36 @@
-import React, { createContext, useLayoutEffect, useRef, useState } from 'react'
+import React, { useState, useLayoutEffect, useContext } from 'react'
 import GroupFormModal from '../components/GroupFormModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCog, faTimes, faCheck, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { AppContext } from '../../App';
+import { get } from '../helpers/apiCallsHelper';
 import PostForm from '../components/PostForm';
 import Nav from '../components/Nav';
+import { useLocation } from 'react-router-dom';
 
 export default function Group() {
-  const [open, setOpen] = useState(false);
+  const {setCurrentUser, setuserLoggedIn, setAlerts, setNotices, userLoggedIn, currentUser, open, setOpen, CableApp} = useContext(AppContext);
+  const [group, setGroup] = useState([]);
+  const [groupUsers, setGroupUsers] = useState({});
+  const [posts, setPosts] = useState([]);
+  const location = useLocation();
+
+  useLayoutEffect(() => {
+    console.log('loc', location.pathname, location.state)
+    get({
+      path: `${location.pathname}`,
+      headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
+    }).then(response => {
+      if(response.status == 200) {
+        console.log(response.data);
+        setGroup({...response.data});
+        setuserLoggedIn(true);
+      } else {
+        setAlerts(arr => response.data.errors);
+      }
+    });
+  }, []);
+
 
   return (
     <>
@@ -16,9 +39,9 @@ export default function Group() {
         <div className='grid grid-cols-4 gap-x-8 pt-6'>
           <div className='col-span-3 min-h-[350px]'>
             <AppContext.Provider value={{open, setOpen}}>
-              <GroupFormModal groupName="My group Name Here"/>
+              <GroupFormModal groupName={group.name}/>
               <div className="flex flex-row w-full mt-6 items-center">
-                <h1 className="font-semibold text-4xl mr-4 capitalize text-gray-600">My group</h1>
+                <h1 className="font-semibold text-4xl mr-4 capitalize text-gray-600">{location.state.name}</h1>
                 <button onClick={() => setOpen(true)} className="text-3xl inline-block text-green-600"><FontAwesomeIcon icon={faCog} /></button>
               </div>
             </AppContext.Provider>
@@ -137,8 +160,6 @@ export default function Group() {
                 </span>
               </div>
             </div>
-
-
           </div>
         </div>
       </div>

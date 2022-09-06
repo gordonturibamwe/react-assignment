@@ -1,6 +1,5 @@
 import React, { useState, createContext, useLayoutEffect } from "react";
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
-import Nav from "./version_1/components/Nav";
 import Login from "./version_1/pages/Login";
 import Register from "./version_1/pages/Register";
 import Groups from "./version_1/pages/Groups";
@@ -19,7 +18,6 @@ import actionCable from 'actioncable'
 // Before App.js loads useLayoutEffect checks to see if user is logged in using the localStorage 'token'
 // If 'token' is valid then user redirected to <Groups> page
 // If 'token' is invalid then user is redirected to <Login> page
-
 const CableApp = {}
 CableApp.cable = actionCable.createConsumer('ws://localhost:3000/cable');
 
@@ -48,8 +46,8 @@ function App() {
   return loading ? <LoadingComponent/> : (
     // AppContext.Provider context holds all the applications temp states
     <AppContext.Provider value={{currentUser, setCurrentUser, open, setOpen, alerts, setAlerts, notices, setNotices, userLoggedIn, setuserLoggedIn, CableApp}}>
-      {alerts.length > 0 && <AlertComponent/> /* Show Alerts */}
-      {notices.length > 0 && <NoticeComponent/> /* Show Notices */}
+      {alerts?.length > 0 && <AlertComponent/> /* Show Alerts */}
+      {notices?.length > 0 && <NoticeComponent/> /* Show Notices */}
 
       <BrowserRouter>
         <Routes>
