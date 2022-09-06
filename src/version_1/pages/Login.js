@@ -1,20 +1,42 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import { AppContext } from '../../App';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLayerGroup } from '@fortawesome/free-solid-svg-icons'
+import { post } from '../helpers/apiCallsHelper';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login() {
-  const {setCurrentUser} = useContext(AppContext);
+  const usernameEmailRef = useRef(null);
+  const rememberMeRef = useRef(null);
+  const passwordRef = useRef(null);
+  const {setAlerts, setNotices, setuserLoggedIn, setCurrentUser} = useContext(AppContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // navigate('/login', {replace: true});
-  }, []);
-
   const login = (event) => {
-    setCurrentUser(true);
     event.preventDefault();
+    if(passwordRef.current.value.length < 4) {
+      setAlerts(arr => ['Password is too short. Minimum 4 characters.']);
+      return;
+    }
+    post({
+      path: "user-login",
+      headers: {headers: {'Content-Type': 'application/json', 'Content-Type':'multipart/form-data'}},
+      formData: {
+        login: usernameEmailRef.current.value,
+        password: passwordRef.current.value
+      }
+    }).then(response => {
+      console.log(response);
+      if(response.status == 200){
+        localStorage.setItem('token', response.headers['authorization'].split('Bearer ')[1]);
+        setCurrentUser(response.data);
+        setuserLoggedIn(true);
+        setNotices(arr => ['Logged in sucessfully.']);
+        navigate('/', {replace: true}); // redirect to <Groups/> after registration
+      } else {
+        setAlerts(arr => response.data.errors); // Display errors if registration is unsuccessful
+      }
+    });
   }
 
   return (
@@ -31,17 +53,18 @@ export default function Login() {
             <input type="hidden" name="remember" defaultValue="true" />
             <div className="-space-y-px rounded-[4px] shadow-sm">
               <div>
-                <label htmlFor="email-address" className="sr-only">
+                <label htmlFor="email-or-username" className="sr-only">
                   Email address
                 </label>
                 <input
-                  id="email-address"
-                  name="email"
-                  type="email"
+                  id="email-or-username"
+                  name="usernameEmail"
+                  ref={usernameEmailRef}
+                  type="text"
                   autoComplete="email"
                   required
                   className="relative block w-full appearance-none rounded-none rounded-t-[4px] border border-gray-300 px-3 py-4 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
-                  placeholder="Email address"
+                  placeholder="Username or Email"
                 />
               </div>
               <div>
@@ -51,32 +74,13 @@ export default function Login() {
                 <input
                   id="password"
                   name="password"
+                  ref={passwordRef}
                   type="password"
                   autoComplete="current-password"
                   required
                   className="relative block w-full appearance-none rounded-none rounded-b-[4px] border border-gray-300 px-3 py-4 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
                   placeholder="Password"
                 />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
-                />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                  Remember me
-                </label>
-              </div>
-
-              <div className="text-sm">
-                <a href="#" className="font-medium text-green-600 hover:text-green-500">
-                  Forgot your password?
-                </a>
               </div>
             </div>
 

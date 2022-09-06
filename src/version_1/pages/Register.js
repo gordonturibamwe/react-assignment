@@ -16,18 +16,14 @@ export default function Register() {
   const {setAlerts, setNotices, setuserLoggedIn, setCurrentUser} = useContext(AppContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // navigate('/register', {replace: true});
-  }, []);
-
-  function registerAccount(event) {
+  const registerAccount = (event) => {
     event.preventDefault();
     if(passwordRef.current.value !== repeatPasswordRef.current.value) {
       setAlerts(arr => ['Password does not match']);
       return;
     }
     post({
-      url: "http://localhost:3000/api/v1/user-registration",
+      path: "user-registration",
       headers: {headers: {'Content-Type': 'application/json', 'Content-Type':'multipart/form-data'}},
       formData: {
         username: usernameRef.current.value,

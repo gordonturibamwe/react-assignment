@@ -26,7 +26,7 @@ function App() {
 
   useLayoutEffect(() => {
     get({
-      url: "http://localhost:3000/api/v1/current-user",
+      path: "current-user",
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
       if(response.status == 200) {

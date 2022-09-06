@@ -20,7 +20,7 @@ export default function NoticeComponent() {
 
   return (
     <div ref={animate}>
-      <div className="alert-toast fixed z-10 top-0 right-0 m-8 max-w-[300px] w-full" ref={noticeRef}>
+      <div className="alert-toast fixed z-[100] top-0 right-0 m-8 max-w-[300px] w-full" ref={noticeRef}>
         <label className="close cursor-pointer flex flex-col items-center justify-between w-full p-6 bg-green-500 rounded shadow-md text-white" title="close" htmlFor="footertoast">
           {notices.map((alert, index) => (
             <p key={index}>{alert}</p>

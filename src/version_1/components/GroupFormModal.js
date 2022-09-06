@@ -1,11 +1,63 @@
-import { Fragment, useContext, useState } from 'react'
+import { Fragment, useContext, useEffect, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { AppContext } from '../../App';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { post } from '../helpers/apiCallsHelper';
 
 export default function GroupFormModal() {
-  const {open, setOpen} = useContext(AppContext);
+  const {open, setOpen, setAlerts, setNotices, setuserLoggedIn, setCurrentUser} = useContext(AppContext);
+  const groupNameRef = useRef(null);
+  const isPublicRef = useRef(null);
+  const isPrivateRef = useRef(null);
+  const isSecretRef = useRef(null);
+  const [groupAccess, setGroupAccess] = useState('is_public');
+
+  useEffect(() => {
+
+  });
+
+  const radioIput = (event) => {
+    console.log(event.target.value);
+    const radioBtns = document.querySelectorAll('#radioBtns label');
+    for (const lb of radioBtns) {
+      if(lb.classList.contains('bg-gray-100')) {
+        lb.classList.remove('border-gray-300', 'bg-gray-100', 'text-gray-500');
+        lb.classList.add('border-gray-300', 'bg-white', 'text-gray-500', 'hover:text-gray-500');
+      }
+    }
+    event.target.nextSibling.classList.add('border-gray-300', 'bg-gray-100', 'text-gray-500');
+    event.target.nextSibling.classList.remove('border-gray-300', 'bg-white', 'text-gray-500', 'hover:text-gray-500');
+    setGroupAccess(event.target.value);
+  }
+
+  const submitForm = (event) => {
+    event.preventDefault();
+    console.log(groupNameRef.current.value);
+    console.log(groupAccess);
+    post({
+      path: "create-group",
+      headers: {headers: {
+        'Content-Type': 'application/json',
+        'Content-Type':'multipart/form-data',
+        'Authorization': `Bearer ${localStorage.getItem("token")}`
+      }},
+      formData: {
+        name: groupNameRef.current.value,
+        group_access: groupAccess
+      }
+    }).then(response => {
+      console.log(response);
+      if(response.status == 200){
+        setCurrentUser(response.data);
+        setuserLoggedIn(true);
+        setNotices(arr => ['Group successfully created.']);
+        setOpen(false);
+      } else {
+        setAlerts(arr => response.data.errors); // Display errors if registration is unsuccessful
+      }
+    });
+  }
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -22,7 +74,7 @@ export default function GroupFormModal() {
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </Transition.Child>
 
-        <div className="fixed inset-0 z-10 overflow-y-auto">
+        <form className="fixed inset-0 z-10 overflow-y-auto" onSubmit={submitForm}>
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
               as={Fragment}
@@ -35,8 +87,7 @@ export default function GroupFormModal() {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl sm:p-10">
                 <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
-                  <button
-                    type="button"
+                  <button type='button'
                     className="rounded-md text-2xl bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-0 focus:ring-offset-0"
                     onClick={() => setOpen(false)}
                   >
@@ -55,9 +106,10 @@ export default function GroupFormModal() {
                         <p className="font-light mb-3 text-sm text-gray-400">People will see this name before joining your group</p>
                       </div>
                       <input
-                        id="email-address"
-                        name="groupName"
+                        id="group-name"
+                        name="name"
                         type="text"
+                        ref={groupNameRef}
                         autoComplete="name"
                         required
                         className="relative flex-grow block w-full appearance-none rounded-[3px] border border-gray-300 px-3 py-3 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
@@ -69,14 +121,14 @@ export default function GroupFormModal() {
                         <h1 className=" text-2xl mb-3">Access control</h1>
                         <p className="font-light mb-3 text-sm text-gray-400">Open means anyone can join. Private means you have to accept their requests. Secret means that you have invited them to join.</p>
                       </div>
-                      <div className="block w-full" data-controller="buttonssss">
-                        <div className="flex flex-row justify-between plan group w-full" data-buttons-target="parent">
-                          <input type="radio" name="group[group_access]" id="is_public" value="is_public" className='hidden' checked/>
-                          <label htmlFor="is_public" className='inline-flex w-full m-r-1 justify-center rounded-[3px] border border-gray-300 bg-white px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0'>Public</label>
-                          <input type="radio" name="group[group_access]" id="is_private" value="is_private" className='hidden'/>
-                          <label htmlFor="is_private" className='inline-flex w-full mx-3 justify-center rounded-[3px] border border-gray-300 bg-white px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0'>Private</label>
-                          <input type="radio" name="group[group_access]" id="is_secret" value="is_secret" className='hidden'/>
-                          <label htmlFor="is_secret"className='inline-flex w-full m-l-1 justify-center rounded-[3px] border border-gray-300 bg-white px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0'>Secret</label>
+                      <div className="block w-full">
+                        <div className="flex flex-row justify-between plan group w-full" id="radioBtns"  onChange={radioIput}>
+                          <input type="radio" name="group_access" id="is_public" value="is_public" className='hidden'/>
+                          <label htmlFor="is_public" ref={isPublicRef} className='cursor-pointer inline-flex w-full m-r-1 justify-center rounded-[3px] border border-gray-300 bg-white px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0'>Public</label>
+                          <input type="radio" name="group_access" id="is_private" value="is_private" className='hidden'/>
+                          <label htmlFor="is_private" ref={isPrivateRef} className='cursor-pointer inline-flex w-full mx-3 justify-center rounded-[3px] border border-gray-300 bg-white px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0'>Private</label>
+                          <input type="radio" name="group_access" id="is_secret" value="is_secret" className='hidden'/>
+                          <label htmlFor="is_secret" ref={isSecretRef} className='cursor-pointer inline-flex w-full m-l-1 justify-center rounded-[3px] border border-gray-300 bg-white px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0'>Secret</label>
                         </div>
                       </div>
                     </div>
@@ -84,9 +136,8 @@ export default function GroupFormModal() {
                 </div>
                 <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                   <button
-                    type="button"
+                    type="submit"
                     className="inline-flex w-full justify-center rounded-[3px] border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={() => setOpen(false)}
                   >
                     Create/Save
                   </button>
@@ -94,7 +145,7 @@ export default function GroupFormModal() {
               </Dialog.Panel>
             </Transition.Child>
           </div>
-        </div>
+        </form>
       </Dialog>
     </Transition.Root>
   )

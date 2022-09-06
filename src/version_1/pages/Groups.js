@@ -18,7 +18,7 @@ export default function Groups() {
     console.log('====', userLoggedIn);
 
     get({
-      url: "http://localhost:3000/api/v1/current-user",
+      path: "current-user",
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
       console.log(response, response.status);

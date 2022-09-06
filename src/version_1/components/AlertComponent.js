@@ -20,7 +20,7 @@ export default function AlertComponent() {
 
   return (
     <div ref={animate}>
-      <div className="alert-toast fixed z-10 top-0 right-0 m-8 max-w-[300px] w-full" ref={alertRef}>
+      <div className="alert-toast fixed z-[100] top-0 right-0 m-8 max-w-[300px] w-full" ref={alertRef}>
         <label className="close cursor-pointer flex flex-col items-center justify-between w-full p-6 bg-red-500 rounded shadow-md text-white" title="close" htmlFor="footertoast">
           {alerts.map((alert, index) => (
             <p key={index}>{alert}</p>
