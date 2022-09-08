@@ -19,7 +19,6 @@ export default function Group() {
   const [loading, setLoading] = useState(true); // For displaying notices <Loading Spinner/>
 
   useLayoutEffect(() => {
-    console.log('loc', location.pathname, location.state)
     get({
       path: `${location.pathname}`,
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
@@ -41,7 +40,7 @@ export default function Group() {
       <Nav/>
       {loading ?
         <LoadingComponent/> :
-      !group.user_exists_in_group ?
+      !group.user_exists_in_group?.request_accepted ?
         <UserNotAGroupMemberComponent groupName={location.state.groupName} groupAccess={group.group_access}/>
       :
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
