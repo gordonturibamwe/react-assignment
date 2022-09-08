@@ -8,7 +8,7 @@ import { get, post } from '../helpers/apiCallsHelper';
 import GroupListComponent from '../components/GroupListComponent';
 
 export default function Groups() {
-  const {setCurrentUser, setuserLoggedIn, setAlerts, userLoggedIn, currentUser, open, setOpen, CableApp} = useContext(AppContext);
+  const {setCurrentUser, setuserLoggedIn, setAlerts, userLoggedIn, setNotices, currentUser, open, setOpen, CableApp} = useContext(AppContext);
   const navigate = useNavigate();
   const [groups, setGroups] = useState([]);
   const filterButtonRefs = useRef([]);
@@ -40,7 +40,7 @@ export default function Groups() {
     }).then(response => {
       console.log(response.data);
       if(response.status == 200) {
-        setAlerts(['Request sent to Group']);
+        setNotices(['Successfully Joined group.']);
       } else {
         setAlerts(arr => response.data.errors);
       }
@@ -55,7 +55,7 @@ export default function Groups() {
     }).then(response => {
       console.log(response.data);
       if(response.status == 200) {
-        setAlerts(['Request sent to Group']);
+        setNotices(['Request sent to Group.']);
       } else {
         setAlerts(arr => response.data.errors);
       }
