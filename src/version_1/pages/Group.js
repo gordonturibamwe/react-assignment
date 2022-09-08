@@ -23,9 +23,7 @@ export default function Group() {
       path: `${location.pathname}`,
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
-      console.log('DATA', response.data);
       if(response.status == 200) {
-        console.log(response.data);
         setGroup({...response.data});
         setuserLoggedIn(true);
       } else {
