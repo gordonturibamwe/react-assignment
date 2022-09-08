@@ -7,6 +7,8 @@ import { get } from '../helpers/apiCallsHelper';
 import PostForm from '../components/PostForm';
 import Nav from '../components/Nav';
 import { useLocation } from 'react-router-dom';
+import LoadingComponent from '../components/LoadingComponent';
+import UserNotAGroupMemberComponent from '../components/UserNotAGroupMemberComponent';
 
 export default function Group() {
   const {setCurrentUser, setuserLoggedIn, setAlerts, setNotices, userLoggedIn, currentUser, open, setOpen, CableApp} = useContext(AppContext);
@@ -14,6 +16,7 @@ export default function Group() {
   const [groupUsers, setGroupUsers] = useState({});
   const [posts, setPosts] = useState([]);
   const location = useLocation();
+  const [loading, setLoading] = useState(true); // For displaying notices <Loading Spinner/>
 
   useLayoutEffect(() => {
     console.log('loc', location.pathname, location.state)
@@ -21,27 +24,33 @@ export default function Group() {
       path: `${location.pathname}`,
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
+      console.log('DATA', response.data);
       if(response.status == 200) {
         console.log(response.data);
         setGroup({...response.data});
         setuserLoggedIn(true);
       } else {
-        setAlerts(arr => response.data.errors);
+        setAlerts(arr => response.data.error ? [response.data.error] : response.data?.errors);
       }
+      setLoading(false);
     });
   }, []);
-
 
   return (
     <>
       <Nav/>
+      {loading ?
+        <LoadingComponent/> :
+      !group.user_exists_in_group ?
+        <UserNotAGroupMemberComponent groupName={location.state.groupName} groupAccess={group.group_access}/>
+      :
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className='grid grid-cols-4 gap-x-8 pt-6'>
           <div className='col-span-3 min-h-[350px]'>
             <AppContext.Provider value={{open, setOpen}}>
-              <GroupFormModal groupName={group.name}/>
+              <GroupFormModal groupName={group.groupName}/>
               <div className="flex flex-row w-full mt-6 items-center">
-                <h1 className="font-semibold text-4xl mr-4 capitalize text-gray-600">{location.state.name}</h1>
+                <h1 className="font-semibold text-4xl mr-4 capitalize text-gray-600">{location.state.groupName}</h1>
                 <button onClick={() => setOpen(true)} className="text-3xl inline-block text-green-600"><FontAwesomeIcon icon={faCog} /></button>
               </div>
             </AppContext.Provider>
@@ -163,6 +172,7 @@ export default function Group() {
           </div>
         </div>
       </div>
+    }
     </>
   )
 }

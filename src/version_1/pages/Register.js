@@ -38,7 +38,7 @@ export default function Register() {
         setNotices(arr => ['Registered sucessfully.']);
         navigate('/', {replace: true}); // redirect to <Groups/> after registration
       } else {
-        setAlerts(arr => response.data.errors); // Display errors if registration is unsuccessful
+        setAlerts(arr => response.data?.errors); // Display errors if registration is unsuccessful
       }
     });
   }

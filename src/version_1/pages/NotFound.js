@@ -3,13 +3,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLayerGroup } from '@fortawesome/free-solid-svg-icons'
 import { AppContext } from '../../App';
 import { Link } from 'react-router-dom';
+import Groups from './Groups';
 
 
 // NotFound.js page displays when the url is not found in the routes
 // It is setup in the App.js
 export default function NotFound() {
   const {userLoggedIn} = useContext(AppContext);
-  return (
+  return userLoggedIn ? <Groups/> : (
     <div  className="h-screen bg-gray-50">
       <div className="flex min-h-full max-w-[400px] items-center justify-center py-12 px-4 sm:px-6 lg:px-8 mx-auto">
         <div className="w-full max-w-md space-y-8 pb-10 mb-10">

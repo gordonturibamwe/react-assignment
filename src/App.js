@@ -12,6 +12,7 @@ import { get } from "./version_1/helpers/apiCallsHelper";
 import NotFound from "./version_1/pages/NotFound";
 import LoadingComponent from "./version_1/components/LoadingComponent";
 import actionCable from 'actioncable'
+import Nav from "./version_1/components/Nav";
 
 
 // App.js page hold all the Routes for the entire application.
@@ -39,6 +40,8 @@ function App() {
         setCurrentUser(response.data);
         setuserLoggedIn(true);
       }
+      console.log('+++', response.status);
+      if(response.status == 0) setAlerts(['Bad connection.']);
       setLoading(false);
     });
   }, []);
