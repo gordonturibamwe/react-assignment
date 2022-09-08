@@ -35,16 +35,30 @@ export default function Groups() {
   const joinGroup = (event, groupId) => {
     console.log(event, groupId);
     post({
-      path: `join-group/${groupId}`,
+      path: `join-public-group/${groupId}`,
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
       console.log(response.data);
-      // if(response.status == 200) {
-      //   setGroups(groups => [...response.data['groups']]);
-      //   setuserLoggedIn(true);
-      // } else {
-      //   setAlerts(arr => response.data.errors);
-      // }
+      if(response.status == 200) {
+        setAlerts(['Request sent to Group']);
+      } else {
+        setAlerts(arr => response.data.errors);
+      }
+    });
+  };
+
+  const requestToJoinPrivateGroup = (event, groupId) => {
+    console.log(event, groupId);
+    post({
+      path: `request-to-join-private-group/${groupId}`,
+      headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
+    }).then(response => {
+      console.log(response.data);
+      if(response.status == 200) {
+        setAlerts(['Request sent to Group']);
+      } else {
+        setAlerts(arr => response.data.errors);
+      }
     });
   };
 
@@ -100,7 +114,7 @@ export default function Groups() {
 
           <div className="bg-white shadow-xs overflow-hidden border rounded-md mt-6 border-gray-302">
             <ul role="list" className='w-full divide-y divide-gray-200'>
-              {groups?.length > 0 && groups.map((group, index) => <GroupListComponent group={group} index={index} joinGroup={joinGroup}/>)}
+              {groups?.length > 0 && groups.map((group, index) => <GroupListComponent group={group} index={index} joinGroup={joinGroup} requestToJoinPrivateGroup={requestToJoinPrivateGroup}/>)}
               {groups?.length == 0 &&
                 <li className="flex hover:bg-gray-50 flex-row items-center justify-between flex-basis pr-6">
                   <div className="px-4 py-6 sm:px-6 text-center">

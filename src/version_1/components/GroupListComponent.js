@@ -4,6 +4,8 @@ import TimeAgo from 'react-timeago'
 import englishStrings from 'react-timeago/lib/language-strings/en'
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter'
 import { AppContext } from '../../App'
+import { parseWithOptions } from 'date-fns/fp'
+import GroupJoinButtonsComponent from './GroupJoinButtonsComponent'
 
 export default function GroupListComponent({...props}) {
   const formatter = buildFormatter(englishStrings);
@@ -29,17 +31,7 @@ export default function GroupListComponent({...props}) {
           </div>
         </div>
       </Link>
-      {/* To be used on loading */}
-      {props.group?.user_exists_in_group?.user_id != currentUser.id && !props.group?.user_exists_in_group?.request_accepted && props.group.group_access == 'is_public' &&
-        <button onClick={(event) => props.joinGroup(event, props.group.id)} className="rounded-[4px] shadow-sm border border-gray-300 hover:text-gray-600 bg-white px-4 py-2 text-gray-600 block text-sm font-medium flex-none">Join Group</button>}
-      {props.group?.user_exists_in_group?.user_id != currentUser.id && !props.group?.user_exists_in_group?.request_accepted && props.group.group_access == 'is_private' &&
-        <button className="rounded-[4px] shadow-sm border border-gray-300 hover:text-gray-600 bg-white px-4 py-2 text-gray-600 block text-sm font-medium flex-none">Request to Join</button>}
-
-      {/* To be used on websockets */}
-      {props.group?.user_exists_in_group?.user_id != currentUser.id && props.group?.user_exists_in_group?.request_accepted && props.group.group_access == 'is_public' &&
-        <button onClick={(event) => props.joinGroup(event, props.group.id)} className="rounded-[4px] shadow-sm border border-gray-300 hover:text-gray-600 bg-white px-4 py-2 text-gray-600 block text-sm font-medium flex-none">Join Group</button>}
-      {props.group?.user_exists_in_group?.user_id != currentUser.id && props.group?.user_exists_in_group?.request_accepted && props.group.group_access == 'is_private' &&
-        <button className="rounded-[4px] shadow-sm border border-gray-300 hover:text-gray-600 bg-white px-4 py-2 text-gray-600 block text-sm font-medium flex-none">Request to Join</button>}
+      <GroupJoinButtonsComponent group={props.group} currentUser={currentUser} joinGroup={props.joinGroup} requestToJoinPrivateGroup={props.requestToJoinPrivateGroup}/>
     </li>
   )
 }
