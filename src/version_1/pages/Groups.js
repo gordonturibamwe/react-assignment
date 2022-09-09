@@ -8,15 +8,13 @@ import { get, post } from '../helpers/apiCallsHelper';
 import GroupListComponent from '../components/GroupListComponent';
 
 export default function Groups() {
-  const {setCurrentUser, setuserLoggedIn, setAlerts, userLoggedIn, setNotices, currentUser, open, setOpen, CableApp} = useContext(AppContext);
-  const navigate = useNavigate();
+  const {setCurrentUser, setuserLoggedIn, setAlerts, setNotices, currentUser, setOpen, CableApp, setGroup} = useContext(AppContext);
   const [groups, setGroups] = useState([]);
   const filterButtonRefs = useRef([]);
   filterButtonRefs.current = [0,1,2].map((_, index) => filterButtonRefs.current[index] ?? createRef());
   const [filter, setFilter] = useState('');
 
   useLayoutEffect(() => {
-    // navigate('/', {replace: true}); // if the url showed any other path
     get({
       path: `all-groups${filter}`,
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
@@ -76,16 +74,15 @@ export default function Groups() {
       {channel: 'GroupsChannel'}, {
         received: (data) => {
           console.log('FROM group----', data);
+          setCurrentUser(currentUser);
           if(data['action'] == 'create') {
             groups.unshift(data);
             setGroups([...groups]);
-            setCurrentUser(currentUser);
           } else if(data['action'] == 'update') {
             const _group = groups.find((gp) => gp.id == data.id);
             const _groupIndex = groups.indexOf(_group);
             groups[_groupIndex] = data;
             setGroups([...groups]);
-            setCurrentUser(currentUser);
           }
         },
         connected: () => {console.log('CONNECTED');},
@@ -114,7 +111,7 @@ export default function Groups() {
 
           <div className="bg-white shadow-xs overflow-hidden border rounded-md mt-6 border-gray-302">
             <ul role="list" className='w-full divide-y divide-gray-200'>
-              {groups?.length > 0 && groups.map((group, index) => <GroupListComponent group={group} index={index} joinGroup={joinGroup} requestToJoinPrivateGroup={requestToJoinPrivateGroup}/>)}
+              {groups?.length > 0 && groups.map((group, index) => <GroupListComponent group={group} joinGroup={joinGroup} requestToJoinPrivateGroup={requestToJoinPrivateGroup}/>)}  {/* group={group} index={index} joinGroup={joinGroup} requestToJoinPrivateGroup={requestToJoinPrivateGroup} */}
               {groups?.length == 0 &&
                 <li className="flex hover:bg-gray-50 flex-row items-center justify-between flex-basis pr-6">
                   <div className="px-4 py-6 sm:px-6 text-center">

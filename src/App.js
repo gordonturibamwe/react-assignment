@@ -25,12 +25,12 @@ CableApp.cable = actionCable.createConsumer('ws://localhost:3000/cable');
 export const AppContext = createContext({});
 function App() {
   const [currentUser, setCurrentUser] = useState({}); // Holds user data information when user is logged in
+  const [group, setGroup] = useState({}); // Holds user data information when user is logged in
   const [userLoggedIn, setuserLoggedIn] = useState(false); // Holds a boolean is user is logged in or not
   const [open, setOpen] = useState(false); // For opening and closing group modal form <GroupFormModal/>
   const [alerts, setAlerts] = useState([]); // For displaying alerts <AlertComponent/>
   const [notices, setNotices] = useState([]); // For displaying notices <NoticeComponent/>
   const [loading, setLoading] = useState(true); // For displaying notices <NoticeComponent/>
-
   useLayoutEffect(() => {
     get({
       path: "current-user",
@@ -40,7 +40,6 @@ function App() {
         setCurrentUser(response.data);
         setuserLoggedIn(true);
       }
-      console.log('+++', response.status);
       if(response.status == 0) setAlerts(['Bad connection.']);
       setLoading(false);
     });
@@ -48,7 +47,7 @@ function App() {
 
   return loading ? <LoadingComponent/> : (
     // AppContext.Provider context holds all the applications temp states
-    <AppContext.Provider value={{currentUser, setCurrentUser, open, setOpen, alerts, setAlerts, notices, setNotices, userLoggedIn, setuserLoggedIn, CableApp}}>
+    <AppContext.Provider value={{currentUser, setCurrentUser, open, setOpen, alerts, setAlerts, notices, setNotices, userLoggedIn, setuserLoggedIn, CableApp, group, setGroup}}>
       {alerts?.length > 0 && <AlertComponent/> /* Show Alerts */}
       {notices?.length > 0 && <NoticeComponent/> /* Show Notices */}
 

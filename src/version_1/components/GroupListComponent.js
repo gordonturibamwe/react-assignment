@@ -8,12 +8,19 @@ import { parseWithOptions } from 'date-fns/fp'
 import GroupJoinButtonsComponent from './GroupJoinButtonsComponent'
 
 export default function GroupListComponent({...props}) {
+  const {currentUser, group, setGroup} = useContext(AppContext);
   const formatter = buildFormatter(englishStrings);
-  const {currentUser} = useContext(AppContext);
+
+    //TODO: DELETE THIS
+  function onGroupClick(event, clickedGroup) { //  onClick={(event) => onGroupClick(event, props.group)}
+    console.log('rrrr', group, event)
+    setGroup({...clickedGroup});
+    console.log('rrrr', group, event)
+  }
 
   return (
     <li id={props.group.id} key={props.group.id} className="flex hover:bg-gray-50 flex-row items-center justify-between flex-basis pr-6">
-      <Link to={`/group/${props.group.id}`} state={{groupName: props.group.name}} className="block hover:bg-gray-50 w-full">
+      <Link to={`/group/${props.group.id}`} state={{group: group}} className="block hover:bg-gray-50 w-full">
         <div className="px-4 py-6 sm:px-6">
           <div className="flex items-center justify-between">
             <h1 className="font-semibold text-2xl inline-block mb-2 text-gray-600">

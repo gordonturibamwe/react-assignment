@@ -5,11 +5,12 @@ import { faLayerGroup } from '@fortawesome/free-solid-svg-icons'
 import { Link } from 'react-router-dom';
 
 export default function Nav() {
-  const {currentUser, setCurrentUser, userLoggedIn, setuserLoggedIn} = useContext(AppContext);
+  const {currentUser, setCurrentUser, userLoggedIn, setuserLoggedIn, setNotices} = useContext(AppContext);
 
   const logout = (event) => {
     localStorage.removeItem('token');
     setuserLoggedIn(false);
+    setNotices(['Logged out successfuly.'])
   }
 
   return (

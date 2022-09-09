@@ -1,4 +1,4 @@
-import { Fragment, useContext, useLayoutEffect, useRef, useState } from 'react'
+import { Fragment, useContext, useEffect, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { AppContext } from '../../App';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -6,20 +6,22 @@ import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { post } from '../helpers/apiCallsHelper';
 
 export default function GroupFormModal({...props}) {
-  const {open, setOpen, setAlerts, setNotices, setuserLoggedIn, setCurrentUser} = useContext(AppContext);
+  const {open, setOpen, setAlerts, setNotices, setuserLoggedIn, setCurrentUser, currentUser, group, setGroup} = useContext(AppContext);
   const groupNameRef = useRef(null);
   const isPublicRef = useRef(null);
   const isPrivateRef = useRef(null);
   const isSecretRef = useRef(null);
-  const [groupAccess, setGroupAccess] = useState('is_public');
-  const [groupName, setGroupName] = useState('');
+  const [groupAccess, setGroupAccess] = useState('');
 
-  useLayoutEffect(() => {
-    setGroupName(props.groupName);
-  }, []);
+  useEffect(() => {
+    setGroupAccess(group.group_access || 'is_public');
+    setGroup({...group});
+    if(!open) {
+      groupNameRef.current = '';
+    }
+  }, [open]);
 
   const radioIput = (event) => {
-    console.log(event.target.value);
     const radioBtns = document.querySelectorAll('#radioBtns label');
     for (const lb of radioBtns) {
       if(lb.classList.contains('bg-gray-100')) {
@@ -32,17 +34,19 @@ export default function GroupFormModal({...props}) {
     setGroupAccess(event.target.value);
   }
 
+  function isGroupAccess(isActive) {
+    return isActive ? 'border-gray-300 bg-gray-100 text-gray-500' : 'border-gray-300 bg-white text-gray-500 hover:text-gray-500'
+  }
+
   const updateGroupName = (event) => {
-    console.log(event.target.value, groupNameRef.current.value)
-    setGroupName(event.target.value)
+    group.name = event.target.value
+    setGroup({...group});
   }
 
   const submitForm = (event) => {
     event.preventDefault();
-    console.log(groupNameRef.current.value);
-    console.log(groupAccess);
     post({
-      path: "create-group",
+      path: props.action == 'update' ? `update-group/${group.id}` : 'create-group',
       headers: {headers: {
         'Content-Type': 'application/json',
         'Content-Type':'multipart/form-data',
@@ -53,11 +57,12 @@ export default function GroupFormModal({...props}) {
         group_access: groupAccess
       }
     }).then(response => {
-      console.log(response);
       if(response.status == 200){
-        setCurrentUser(response.data);
+        group.name = groupNameRef.current.value
+        group.group_access = groupAccess
+        setGroup({...group});
         setuserLoggedIn(true);
-        setNotices(arr => ['Group successfully created.']);
+        setNotices(arr => [props.action == 'update' ? 'Group successfully update.' : 'Group successfully created.']);
         setOpen(false);
       } else {
         setAlerts(arr => response.data.errors); // Display errors if registration is unsuccessful
@@ -108,7 +113,7 @@ export default function GroupFormModal({...props}) {
                     </Dialog.Title>
                     <div className="my-5 w-full flex flex-row items-start mt-8">
                       <div className="mr-6 pr-6 max-w-200">
-                        <h1 className=" text-2xl mb-3">Group name</h1>
+                        <h1 className=" text-2xl mb-3">Group name:</h1>
                         <p className="font-light mb-3 text-sm text-gray-400">People will see this name before joining your group</p>
                       </div>
                       <input
@@ -116,7 +121,7 @@ export default function GroupFormModal({...props}) {
                         name="name"
                         type="text"
                         ref={groupNameRef}
-                        value={groupName}
+                        value= {group.name || ''}
                         autoComplete="name"
                         onChange={updateGroupName}
                         required
@@ -132,11 +137,11 @@ export default function GroupFormModal({...props}) {
                       <div className="block w-full">
                         <div className="flex flex-row justify-between plan group w-full" id="radioBtns"  onChange={radioIput}>
                           <input type="radio" name="group_access" id="is_public" value="is_public" className='hidden'/>
-                          <label htmlFor="is_public" ref={isPublicRef} className='cursor-pointer inline-flex w-full m-r-1 justify-center rounded-[3px] border border-gray-300 bg-white px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0'>Public</label>
+                          <label htmlFor="is_public" ref={isPublicRef} className={isGroupAccess(groupAccess == 'is_public') + ' cursor-pointer inline-flex w-full mx-3 justify-center rounded-[3px] border px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:mt-0'}>Public</label>
                           <input type="radio" name="group_access" id="is_private" value="is_private" className='hidden'/>
-                          <label htmlFor="is_private" ref={isPrivateRef} className='cursor-pointer inline-flex w-full mx-3 justify-center rounded-[3px] border border-gray-300 bg-white px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0'>Private</label>
+                          <label htmlFor="is_private" ref={isPrivateRef} className={isGroupAccess(groupAccess == 'is_private') + ' cursor-pointer inline-flex w-full mx-3 justify-center rounded-[3px] border px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:mt-0'}>Private</label>
                           <input type="radio" name="group_access" id="is_secret" value="is_secret" className='hidden'/>
-                          <label htmlFor="is_secret" ref={isSecretRef} className='cursor-pointer inline-flex w-full m-l-1 justify-center rounded-[3px] border border-gray-300 bg-white px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0'>Secret</label>
+                          <label htmlFor="is_secret" ref={isSecretRef} className={isGroupAccess(groupAccess == 'is_secret') + ' cursor-pointer inline-flex w-full mx-3 justify-center rounded-[3px] border px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:mt-0'}>Secret</label>
                         </div>
                       </div>
                     </div>
@@ -147,7 +152,7 @@ export default function GroupFormModal({...props}) {
                     type="submit"
                     className="inline-flex w-full justify-center rounded-[3px] border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
                   >
-                    Create/Save
+                    {props.action == 'update' ? 'Update/Save' : 'Create/Save'}
                   </button>
                 </div>
               </Dialog.Panel>
