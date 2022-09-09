@@ -12,8 +12,6 @@ import { get } from "./version_1/helpers/apiCallsHelper";
 import NotFound from "./version_1/pages/NotFound";
 import LoadingComponent from "./version_1/components/LoadingComponent";
 import actionCable from 'actioncable'
-import Nav from "./version_1/components/Nav";
-
 
 // App.js page hold all the Routes for the entire application.
 // Before App.js loads useLayoutEffect checks to see if user is logged in using the localStorage 'token'

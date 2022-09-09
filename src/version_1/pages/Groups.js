@@ -126,19 +126,3 @@ export default function Groups() {
     </div>
   )
 }
-
-
-// if(data['action'] == 'update') {
-//   // UPDATE ACTION IN THE RESPONSE DATA
-//   // const found = groupTitles.find((element) => element['id'] == data['id']);
-//   // const index = groupTitles.indexOf(found);
-//   // groupTitles[index] = data;
-//   // setGroupTitles([...groupTitles]);
-// } else if(data['action'] == 'create') {
-//   // CREAT ACTION IN THE RESPONSE DATA
-//   // groupTitles.unshift(data);
-//   // setGroupTitles([...groupTitles]);
-// } else if(data['action'] == 'delete') {
-//   // DELETE ACTION IN THE RESPONSE DATA
-//   // setGroupTitles([...groupTitles.filter((element) => element['id'] != data['id'])]);
-// }

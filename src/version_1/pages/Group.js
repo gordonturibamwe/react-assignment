@@ -9,6 +9,8 @@ import Nav from '../components/Nav';
 import { useLocation } from 'react-router-dom';
 import LoadingComponent from '../components/LoadingComponent';
 import UserNotAGroupMemberComponent from '../components/UserNotAGroupMemberComponent';
+import GroupMembersComponent from '../components/GroupMembersComponent'
+import GroupUserRequestsComponent from '../components/GroupUserRequestsComponent'
 
 export default function Group() {
   const {currentUser, setuserLoggedIn, setAlerts, setNotices, open, setOpen, group, setGroup} = useContext(AppContext);
@@ -109,60 +111,9 @@ export default function Group() {
                 placeholder="Invite @user"
               />
 
-              <div className="felx flex-row w-full">
-                <h1 className="font-bold text-2xl inline-block mr-3 text-gray-600">Members</h1>
-                <div className="flex justify-between space-x-3 pt-2">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm text-gray-400 truncate">Gordon</p>
-                  </div>
-                </div>
-                <div className="flex justify-between space-x-3 pt-4">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm text-gray-400 truncate">Jessica</p>
-                  </div>
-                  <button className='flex-shrink-0 text-red-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faTimes} /></button>
-                </div>
-              </div>
-
-              <div className="flex flex-col w-full mt-8 mb-4">
-                <h1 className="font-bold text-2xl inline-block mr-3 text-gray-600">Requests</h1>
-                <div className="flex justify-between space-x-3 pt-4">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm text-light text-gray-400 truncate">Nakku</p>
-                  </div>
-                  <span className="flex flex-row">
-                    <button className='flex-shrink-0 text-red-500 whitespace-nowrap mr-4 text-sm'><FontAwesomeIcon icon={faTimes} /></button>
-                    <button className='flex-shrink-0 text-green-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faCheck} /></button>
-                  </span>
-                </div>
-                <div className="flex justify-between space-x-3 pt-4">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm text-light text-gray-400 truncate">Hezel</p>
-                  </div>
-                  <span className="flex flex-row">
-                    <button className='flex-shrink-0 text-red-500 whitespace-nowrap mr-4 text-sm'><FontAwesomeIcon icon={faTimes} /></button>
-                    <button className='flex-shrink-0 text-green-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faCheck} /></button>
-                  </span>
-                </div>
-                <div className="flex justify-between space-x-3 pt-4">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm text-light text-gray-400 truncate">Mabilizi</p>
-                  </div>
-                  <span className="flex flex-row">
-                    <button className='flex-shrink-0 text-red-500 whitespace-nowrap mr-4 text-sm'><FontAwesomeIcon icon={faTimes} /></button>
-                    <button className='flex-shrink-0 text-green-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faCheck} /></button>
-                  </span>
-                </div>
-                <div className="flex justify-between space-x-3 pt-4">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm text-light text-gray-400 truncate">Jesus</p>
-                  </div>
-                  <span className="flex flex-row">
-                    <button className='flex-shrink-0 text-red-500 whitespace-nowrap mr-4 text-sm'><FontAwesomeIcon icon={faTimes} /></button>
-                    <button className='flex-shrink-0 text-green-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faCheck} /></button>
-                  </span>
-                </div>
-              </div>
+              <h1 className="font-bold text-2xl inline-block mr-3 text-gray-600">Members</h1>
+              <GroupMembersComponent group={group}/>
+              <GroupUserRequestsComponent group={group}/>
             </div>
           </div>
         </div>
