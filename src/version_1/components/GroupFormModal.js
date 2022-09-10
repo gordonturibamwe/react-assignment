@@ -14,12 +14,14 @@ export default function GroupFormModal({...props}) {
   const [groupAccess, setGroupAccess] = useState('');
 
   useEffect(() => {
-    setGroupAccess(group.group_access || 'is_public');
-    setGroup({...group});
-    if(!open) {
-      groupNameRef.current = '';
+    if(props.action == 'update') { // setup current group state when group is displayed
+      setGroupAccess(group.group_access || 'is_public');
+      if(!open) groupNameRef.current = '';
+    } else { // reset group to to empty object if props.action is null
+      setGroup({});
+      setGroupAccess('is_public');
     }
-  }, [open]);
+  }, [setOpen]);
 
   const radioIput = (event) => {
     const radioBtns = document.querySelectorAll('#radioBtns label');

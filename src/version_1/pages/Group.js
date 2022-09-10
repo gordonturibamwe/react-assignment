@@ -6,7 +6,7 @@ import { AppContext } from '../../App';
 import { get } from '../helpers/apiCallsHelper';
 import PostForm from '../components/PostForm';
 import Nav from '../components/Nav';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import LoadingComponent from '../components/LoadingComponent';
 import UserNotAGroupMemberComponent from '../components/UserNotAGroupMemberComponent';
 import GroupMembersComponent from '../components/GroupMembersComponent'
@@ -25,6 +25,7 @@ export default function Group() {
   } = useContext(AppContext);
   const location = useLocation();
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useLayoutEffect(() => {
     setGroup({...location.state.group});
@@ -37,6 +38,8 @@ export default function Group() {
         setuserLoggedIn(true);
       } else {
         setAlerts(arr => response.data.error ? [response.data.error] : response.data?.errors);
+        if(response.data.error == 'Not Found')
+          navigate('/', {replace: true});
       }
       setLoading(false);
     });
@@ -48,27 +51,7 @@ export default function Group() {
         received: (data) => {
           setCurrentUser(currentUser);
           if(data.group_id == group.id) {
-            if(data.action == 'create') {
-              console.log('CREATED', data);
-              if(data.request_accepted) {
-                if(group.group_access == 'is_public') {
-                  groupMembers.push(data);
-                  setGroupMembers([...groupMembers]);
-                } else if(group.group_access == 'is_private') {
-                  setUserGroupRequests([...userGroupRequests.filter((request) => request.id != data.id)]);
-                  groupMembers.push(data);
-                  setGroupMembers([...groupMembers]);
-                }
-              } else if(group.group_access == 'is_private') {
-                userGroupRequests.push(data);
-                setUserGroupRequests([...userGroupRequests]);
-              }
-            } else if(data.action == 'destroy') {
-              if(group.request_accepted)
-                setGroupMembers([...groupMembers.filter((request) => request.id != data.id)]);
-              else
-                setUserGroupRequests([...userGroupRequests.filter((request) => request.id != data.id)]);
-            }
+
           }
         },
         connected: () => {console.log('USER GROUP CONNECTED');},
