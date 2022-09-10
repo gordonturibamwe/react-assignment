@@ -6,9 +6,8 @@ import { AppContext } from '../../App';
 import { get, patch, destroy } from '../helpers/apiCallsHelper';
 
 export default function GroupUserRequestsComponent({...props}) {
-  const {currentUser, setCurrentUser, setuserLoggedIn, setAlerts, setNotices, CableApp} = useContext(AppContext);
+  const {currentUser, setCurrentUser, setuserLoggedIn, setAlerts, setNotices, userGroupRequests, setUserGroupRequests} = useContext(AppContext);
   const [loading, setLoading] = useState(true);
-  const [userRequests, setUserRequests] = useState([]);
 
   useEffect(() => {
     get({
@@ -17,7 +16,7 @@ export default function GroupUserRequestsComponent({...props}) {
     }).then(response => {
       console.log(response.data.group_requests);
       if(response.status == 200) {
-        setUserRequests([...response.data.group_requests]);
+        setUserGroupRequests([...response.data.group_requests]);
         setuserLoggedIn(true);
       } else {
         setAlerts(arr => response.data.error ? [response.data.error] : response.data?.errors);
@@ -32,11 +31,8 @@ export default function GroupUserRequestsComponent({...props}) {
       path: `accept-private-group-request/${requestId}`,
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
-      console.log(response.data.group_requests);
       if(response.status == 200) {
-        const requests = userRequests.find((request) => request.id != requestId);
-        console.log('++++', requests);
-        setUserRequests([...requests || []]);
+        setNotices(['User group request accepted..']);
       } else {
         setAlerts(arr => response.data.error ? [response.data.error] : response.data?.errors);
       }
@@ -52,8 +48,6 @@ export default function GroupUserRequestsComponent({...props}) {
     }).then(response => {
       console.log(response.data.group_requests);
       if(response.status == 200) {
-        const requests = userRequests.find((request) => request.id != requestId);
-        setUserRequests(requests == undefined ? [] : [...requests]);
         setNotices(['User deleted from group.'])
       } else {
         setAlerts(arr => response.data.error ? [response.data.error] : response.data?.errors);
@@ -62,32 +56,10 @@ export default function GroupUserRequestsComponent({...props}) {
     });
   }
 
-
-  useEffect(() => { // CONNECTING ACTION CABLE TO GROUPSCHANNEL
-    CableApp.cable.subscriptions.create(
-      {channel: 'UsersGroupChannel'}, {
-        received: (data) => {
-          console.log('2 ----', data);
-          setCurrentUser(currentUser);
-          if(data.group_id == props.group.id) {
-            if(!data.request_accepted && props.group.group_access == 'is_private') {
-              userRequests.push(data) //.splice(1, 0, data) //.unshift(data);
-              setUserRequests([...userRequests]);
-            }
-          }
-        },
-        connected: () => {console.log('USER GROUP CONNECTED');},
-        disconnected: (e) => console.log('USER GROUP DISCONNECTED', e),
-      },
-    );
-    return () => CableApp.cable.disconnect()
-  }, [CableApp.subscriptions, userRequests, setUserRequests]);
-
-
-  return userRequests.length > 0 && currentUser.id == props.group.user_id ? (
+  return userGroupRequests.length > 0 && currentUser.id == props.group.user_id ? (
     <div className="flex flex-col w-full mt-8 mb-4">
       <h1 className="font-bold text-2xl inline-block mr-3 text-gray-600">Requests</h1>
-      {userRequests.length > 0 && userRequests.map(userRequest => (
+      {userGroupRequests.length > 0 && userGroupRequests.map(userRequest => (
         <div key={userRequest.id} className="flex justify-between space-x-3 pt-4">
           <div className="min-w-0 flex-1">
             <p className="text-sm text-light text-gray-400 truncates">{userRequest.user.username}</p>

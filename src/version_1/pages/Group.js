@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useContext } from 'react'
+import React, { useState, useLayoutEffect, useContext, useEffect } from 'react'
 import GroupFormModal from '../components/GroupFormModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCog, faTimes, faCheck, faArrowRight } from '@fortawesome/free-solid-svg-icons'
@@ -13,7 +13,16 @@ import GroupMembersComponent from '../components/GroupMembersComponent'
 import GroupUserRequestsComponent from '../components/GroupUserRequestsComponent'
 
 export default function Group() {
-  const {currentUser, setuserLoggedIn, setAlerts, setNotices, open, setOpen, group, setGroup} = useContext(AppContext);
+  const {
+    currentUser, setCurrentUser,
+    setuserLoggedIn,
+    setAlerts, setNotices,
+    open, setOpen,
+    group, setGroup,
+    userGroupRequests, setUserGroupRequests,
+    groupMembers, setGroupMembers,
+    CableApp
+  } = useContext(AppContext);
   const location = useLocation();
   const [loading, setLoading] = useState(true);
 
@@ -32,6 +41,43 @@ export default function Group() {
       setLoading(false);
     });
   }, []);
+
+  useEffect(() => { // CONNECTING ACTION CABLE TO GROUPSCHANNEL
+    CableApp.cable.subscriptions.create(
+      {channel: 'UsersGroupChannel'}, {
+        received: (data) => {
+          setCurrentUser(currentUser);
+          if(data.group_id == group.id) {
+            if(data.action == 'create') {
+              console.log('CREATED', data);
+              if(data.request_accepted) {
+                if(group.group_access == 'is_public') {
+                  groupMembers.push(data);
+                  setGroupMembers([...groupMembers]);
+                } else if(group.group_access == 'is_private') {
+                  setUserGroupRequests([...userGroupRequests.filter((request) => request.id != data.id)]);
+                  groupMembers.push(data);
+                  setGroupMembers([...groupMembers]);
+                }
+              } else if(group.group_access == 'is_private') {
+                userGroupRequests.push(data);
+                setUserGroupRequests([...userGroupRequests]);
+              }
+            } else if(data.action == 'destroy') {
+              if(group.request_accepted)
+                setGroupMembers([...groupMembers.filter((request) => request.id != data.id)]);
+              else
+                setUserGroupRequests([...userGroupRequests.filter((request) => request.id != data.id)]);
+            }
+          }
+        },
+        connected: () => {console.log('USER GROUP CONNECTED');},
+        disconnected: (e) => console.log('USER GROUP DISCONNECTED', e),
+      },
+    );
+    return () => CableApp.cable.disconnect()
+  }, [CableApp.subscriptions, userGroupRequests, setUserGroupRequests, groupMembers, setGroupMembers]);
+
 
   return (
     <>

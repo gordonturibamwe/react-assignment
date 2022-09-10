@@ -29,6 +29,8 @@ function App() {
   const [alerts, setAlerts] = useState([]); // For displaying alerts <AlertComponent/>
   const [notices, setNotices] = useState([]); // For displaying notices <NoticeComponent/>
   const [loading, setLoading] = useState(true); // For displaying notices <NoticeComponent/>
+  const [userGroupRequests, setUserGroupRequests] = useState([]); // For holding userGroupRequests
+  const [groupMembers, setGroupMembers] = useState([]); // For holding groupMembers
   useLayoutEffect(() => {
     get({
       path: "current-user",
@@ -44,8 +46,17 @@ function App() {
   }, []);
 
   return loading ? <LoadingComponent/> : (
-    // AppContext.Provider context holds all the applications temp states
-    <AppContext.Provider value={{currentUser, setCurrentUser, open, setOpen, alerts, setAlerts, notices, setNotices, userLoggedIn, setuserLoggedIn, CableApp, group, setGroup}}>
+    <AppContext.Provider value={{ // AppContext.Provider context holds all the applications temp states
+        CableApp, // Holding Websocket connections
+        currentUser, setCurrentUser, // holds currentUser details ~> {id:, username:, etc}
+        open, setOpen, // Holds the state of GroupForm. true if open, false when hidden
+        alerts, setAlerts,
+        notices, setNotices,
+        userLoggedIn, setuserLoggedIn,
+        group, setGroup,
+        userGroupRequests, setUserGroupRequests,
+        groupMembers, setGroupMembers
+      }}>
       {alerts?.length > 0 && <AlertComponent/> /* Show Alerts */}
       {notices?.length > 0 && <NoticeComponent/> /* Show Notices */}
 
