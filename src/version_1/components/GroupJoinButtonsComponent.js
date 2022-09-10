@@ -12,6 +12,7 @@ export default function GroupJoinButtonsComponent({...props}) {
       {/* BUTTONS FOR PRIVATE GROUP */}
       {props.currentUser.id != props.group.user_id &&
       props.group?.user_exists_in_group?.user_id != props.currentUser.id &&
+      !props.group?.user_exists_in_group?.request_accepted &&
       props.group.group_access == 'is_private' ?
         <button onClick={(event) => props.requestToJoinPrivateGroup(event, props.group.id)} className="rounded-[4px] shadow-sm border border-gray-300 hover:text-gray-600 bg-white px-4 py-2 text-gray-600 block text-sm font-medium flex-none">Request to Join</button> :
       props.currentUser.id != props.group.user_id &&
