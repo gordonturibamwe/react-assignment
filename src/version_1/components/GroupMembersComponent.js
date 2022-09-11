@@ -4,6 +4,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { AppContext } from '../../App';
 import LoadingSpinnerComponent from '../components/LoadingSpinnerComponent';
 import { get, destroy } from '../helpers/apiCallsHelper';
+import { useNavigate } from 'react-router-dom';
 
 export default function GroupMembersComponent({...props}) {
   // const {currentUser, setCurrentUser, setuserLoggedIn, setAlerts, setNotices, CableApp} = useContext(AppContext);
@@ -17,7 +18,7 @@ export default function GroupMembersComponent({...props}) {
     groupMembers, setGroupMembers,
     CableApp
   } = useContext(AppContext);
-
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [members, setMembers] = useState([]);
 
@@ -36,15 +37,18 @@ export default function GroupMembersComponent({...props}) {
     });
   }, []);
 
-  const deleteUserGroupRequest = (event, requestId) => {
+  const deleteUserGroupRequest = (event, userGroupRequest) => {
     event.preventDefault();
     destroy({
-      path: `destroy-group-request/${requestId}`,
+      path: `destroy-group-request/${userGroupRequest.id}`,
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
       console.log(response.data.group_requests);
       if(response.status == 200) {
-        setNotices(['User deleted from group.'])
+        setNotices(['User deleted from group.']);
+        console.log('--11', currentUser.id, userGroupRequest)
+        if(currentUser.id == userGroupRequest.user.id)
+          navigate('/', {replace: true});
       } else {
         setAlerts(arr => response.data.error ? [response.data.error] : response.data?.errors);
       }
@@ -62,9 +66,9 @@ export default function GroupMembersComponent({...props}) {
               <p className="text-sm text-gray-400 truncate">{member.user.username} {member.is_admin && <span className='text-[9px] mt-1 ml-1 text-gray-300'>Admin</span>}</p>
             </div>
             {!member.is_admin && currentUser.id == props.group.user_id &&
-              <button onClick={(event) => deleteUserGroupRequest(event, member.id)} className='flex-shrink-0 text-red-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faTimes} /></button>}
+              <button onClick={(event) => deleteUserGroupRequest(event, member)} className='flex-shrink-0 text-red-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faTimes} /></button>}
             {currentUser.id == member.user.id && !member.is_admin &&
-              <button onClick={(event) => deleteUserGroupRequest(event, member.id)} className='flex-shrink-0 text-red-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faTimes} /></button>}
+              <button onClick={(event) => deleteUserGroupRequest(event, member)} className='flex-shrink-0 text-red-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faTimes} /></button>}
           </div>
         ))}
       </div>

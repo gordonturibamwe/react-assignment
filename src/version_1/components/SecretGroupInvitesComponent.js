@@ -4,6 +4,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { AppContext } from '../../App';
 import LoadingSpinnerComponent from './LoadingSpinnerComponent';
 import { get, destroy } from '../helpers/apiCallsHelper';
+import { useNavigate } from 'react-router-dom';
 
 export default function SecretGroupInvitesComponent({...props}) {
   const {
@@ -15,6 +16,7 @@ export default function SecretGroupInvitesComponent({...props}) {
     CableApp
   } = useContext(AppContext);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     get({
@@ -31,15 +33,18 @@ export default function SecretGroupInvitesComponent({...props}) {
     });
   }, []);
 
-  const deleteUserGroupRequest = (event, requestId) => {
+  const deleteUserGroupRequest = (event, userGroupRequest) => {
     event.preventDefault();
     destroy({
-      path: `destroy-group-request/${requestId}`,
+      path: `destroy-group-request/${userGroupRequest.id}`,
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
       console.log(response.data.group_requests);
       if(response.status == 200) {
-        setNotices(['User deleted from group.'])
+        setNotices(['User deleted from group.']);
+        if(currentUser.id == userGroupRequest.user.id)
+          navigate('/', {replace: true});
+
       } else {
         setAlerts(arr => response.data.error ? [response.data.error] : response.data?.errors);
       }
@@ -60,7 +65,7 @@ export default function SecretGroupInvitesComponent({...props}) {
               </div>
               {/* {!invitee.is_admin && currentUser.id == props.group.user_id && */}
               {!invitee.is_admin && currentUser.id == props.group.user_id &&
-                <button onClick={(event) => deleteUserGroupRequest(event, invitee.id)} className='flex-shrink-0 text-red-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faTimes} /></button>}
+                <button onClick={(event) => deleteUserGroupRequest(event, invitee)} className='flex-shrink-0 text-red-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faTimes} /></button>}
             </div>
           ))}
         </div>

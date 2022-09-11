@@ -150,7 +150,7 @@ export default function Group() {
               </div>
             </div>
             <div className='col-span-1 min-h-[50px] mt-6 pt-2'>
-              {group.group_access == 'is_secret' && <UsernameListComponent/>}
+              {group.group_access == 'is_secret' && currentUser.id == group.user_id && <UsernameListComponent/>}
               <GroupMembersComponent group={group}/>
               <GroupUserRequestsComponent group={group}/>
               {false && group.group_access == 'is_secret' && <SecretGroupInvitesComponent group={group}/>}

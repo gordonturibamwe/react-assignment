@@ -21,6 +21,10 @@ export default function GroupJoinButtonsComponent({...props}) {
         <button className="px-4 py-2 text-gray-400 block font-normal text-xs flex-none">Waiting Approval</button> :
         <span></span>
       }
+
+      {props.group.group_access == 'is_secret' && props.group?.user_exists_in_group?.request_accepted ?
+        <button className="px-4 py-2 text-gray-400 block font-normal text-xs flex-none">You are a Member</button> :
+        <span></span>}
     </div>
   )
 }

@@ -25,10 +25,10 @@ export default function GroupUserRequestsComponent({...props}) {
     });
   }, []);
 
-  const acceptPrivateRequest = (event, requestId) => {
+  const acceptPrivateRequest = (event, userGroupRequest) => {
     event.preventDefault();
     patch({
-      path: `accept-private-group-request/${requestId}`,
+      path: `accept-private-group-request/${userGroupRequest.id}`,
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
       if(response.status == 200) {
@@ -40,10 +40,10 @@ export default function GroupUserRequestsComponent({...props}) {
     });
   }
 
-  const deleteUserGroupRequest = (event, requestId) => {
+  const deleteUserGroupRequest = (event, userGroupRequest) => {
     event.preventDefault();
     destroy({
-      path: `destroy-group-request/${requestId}`,
+      path: `destroy-group-request/${userGroupRequest.id}`,
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
       if(response.status == 200) {
@@ -64,8 +64,8 @@ export default function GroupUserRequestsComponent({...props}) {
             <p className="text-sm text-light text-gray-400 truncates">{userRequest.user.username}</p>
           </div>
           <span className="flex flex-row">
-            <button onClick={(event) => deleteUserGroupRequest(event, userRequest.id)} className='flex-shrink-0 text-red-500 whitespace-nowrap mr-4 text-sm'><FontAwesomeIcon icon={faTimes} /></button>
-            <button onClick={(event) => acceptPrivateRequest(event, userRequest.id)} className='flex-shrink-0 text-green-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faCheck} /></button>
+            <button onClick={(event) => deleteUserGroupRequest(event, userRequest)} className='flex-shrink-0 text-red-500 whitespace-nowrap mr-4 text-sm'><FontAwesomeIcon icon={faTimes} /></button>
+            <button onClick={(event) => acceptPrivateRequest(event, userRequest)} className='flex-shrink-0 text-green-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faCheck} /></button>
           </span>
         </div>
       ))}

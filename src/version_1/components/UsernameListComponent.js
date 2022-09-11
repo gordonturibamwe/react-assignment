@@ -24,10 +24,8 @@ export default function UsernameListComponent() {
     console.log(event.target.value);
     const value = event.target.value;
     if (value == '') setUserchUsers([]);
-    if(!value.match(/[a-zA-Z0-9]/)){
-      //setAlerts(['No special characters.'])
-      return
-    } else
+    if(!value.match(/[a-zA-Z0-9]/)) return
+    else
       get({
         path: `search-user/${value.replace('@', '')}`,
         headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
