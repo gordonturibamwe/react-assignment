@@ -77,32 +77,6 @@ export default function PostForm({...props}) {
         <div className='flex w-full justify-end pt-3'>
           <button type="submit" className='rounded-[4px]  px-6 py-2 bg-green-600 hover:bg-green-700 border-green-800 text-white block text-sm font-medium shadow-sm '>{props.buttonTitle}</button>
         </div>
-
-        <div ref={usernameRef} className="overflow-hidden bg-white w-40 absolute hidden">
-          <ul role="list" className="divide-y divide-gray-200 border sm:rounded-[4px]">
-            <li key="ddd1">
-              <a href="#" onClick={taggingUsername} className="block hover:bg-gray-50 px-3 py-2 truncate text-sm font-medium text-green-600">
-                gordon
-              </a>
-            </li>
-            <li key="ddd2">
-              <a href="#" onClick={taggingUsername} className="block hover:bg-gray-50 px-3 py-2 truncate text-sm font-medium text-green-600">
-                Kalanzi
-              </a>
-            </li>
-            <li key="ddd3">
-            <a href="#" onClick={taggingUsername} className="block hover:bg-gray-50 px-3 py-2 truncate text-sm font-medium text-green-600">
-              fortunate
-              </a>
-            </li>
-            <li key="ddd4">
-              <a href="#" onClick={taggingUsername} className="block hover:bg-gray-50 px-3 py-2 truncate text-sm font-medium text-green-600">
-                loving
-              </a>
-            </li>
-          </ul>
-        </div>
-
       </form>
       <img src="" alt="" ref={imgRef} className="rounded max-w-100"/>
 

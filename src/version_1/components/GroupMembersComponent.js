@@ -53,17 +53,21 @@ export default function GroupMembersComponent({...props}) {
   }
 
   return loading ? <LoadingSpinnerComponent/> : (
-    <div className="felx flex-row w-full">
-      {groupMembers.length > 0 && groupMembers.map(member => (
-        <div key={member.id} className="flex justify-between space-x-3 pt-4">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm text-gray-400 truncate">{member.user.username} {member.is_admin && <span className='text-[9px] mt-1 ml-1 text-gray-300'>Admin</span>}</p>
+    <>
+      <h1 className="font-bold text-2xl inline-block mr-3 text-gray-600">Members <span className='text-xs text-green-600'><sup>{groupMembers.length}</sup></span></h1>
+      <div className="felx flex-row w-full">
+        {groupMembers.length > 0 && groupMembers.map(member => (
+          <div key={member.id} className="flex justify-between space-x-3 pt-4">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-gray-400 truncate">{member.user.username} {member.is_admin && <span className='text-[9px] mt-1 ml-1 text-gray-300'>Admin</span>}</p>
+            </div>
+            {!member.is_admin && currentUser.id == props.group.user_id &&
+              <button onClick={(event) => deleteUserGroupRequest(event, member.id)} className='flex-shrink-0 text-red-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faTimes} /></button>}
+            {currentUser.id == member.user.id && !member.is_admin &&
+              <button onClick={(event) => deleteUserGroupRequest(event, member.id)} className='flex-shrink-0 text-red-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faTimes} /></button>}
           </div>
-          {!member.is_admin && currentUser.id == props.group.user_id &&
-          <button onClick={(event) => deleteUserGroupRequest(event, member.id)} className='flex-shrink-0 text-red-500 whitespace-nowrap text-sm'><FontAwesomeIcon icon={faTimes} /></button>}
-        </div>
-      ))}
-
-    </div>
+        ))}
+      </div>
+    </>
   )
 }

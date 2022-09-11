@@ -31,6 +31,9 @@ function App() {
   const [loading, setLoading] = useState(true); // For displaying notices <NoticeComponent/>
   const [userGroupRequests, setUserGroupRequests] = useState([]); // For holding userGroupRequests
   const [groupMembers, setGroupMembers] = useState([]); // For holding groupMembers
+  const [searchUsers, setUserchUsers] = useState([]); // For holding groupMembers
+  const [groupInvites, setGroupInvites,] = useState([]); // For holding groupMembers
+
   useLayoutEffect(() => {
     get({
       path: "current-user",
@@ -55,7 +58,9 @@ function App() {
         userLoggedIn, setuserLoggedIn,
         group, setGroup,
         userGroupRequests, setUserGroupRequests,
-        groupMembers, setGroupMembers
+        groupMembers, setGroupMembers,
+        searchUsers, setUserchUsers,
+        groupInvites, setGroupInvites
       }}>
       {alerts?.length > 0 && <AlertComponent/> /* Show Alerts */}
       {notices?.length > 0 && <NoticeComponent/> /* Show Notices */}

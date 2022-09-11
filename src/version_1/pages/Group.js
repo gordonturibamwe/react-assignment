@@ -11,6 +11,8 @@ import LoadingComponent from '../components/LoadingComponent';
 import UserNotAGroupMemberComponent from '../components/UserNotAGroupMemberComponent';
 import GroupMembersComponent from '../components/GroupMembersComponent'
 import GroupUserRequestsComponent from '../components/GroupUserRequestsComponent'
+import SecretGroupInvitesComponent from '../components/SecretGroupInvitesComponent'
+import UsernameListComponent from '../components/UsernameListComponent';
 
 export default function Group() {
   const {
@@ -21,6 +23,7 @@ export default function Group() {
     group, setGroup,
     userGroupRequests, setUserGroupRequests,
     groupMembers, setGroupMembers,
+    searchUsers, setUserchUsers,
     CableApp
   } = useContext(AppContext);
   const location = useLocation();
@@ -51,7 +54,26 @@ export default function Group() {
         received: (data) => {
           setCurrentUser(currentUser);
           if(data.group_id == group.id) {
-
+            if(data.request_accepted && data.action == 'create') {
+              console.log('1 created');
+              groupMembers.push(data);
+              setGroupMembers([...groupMembers]);
+            } else if(data.request_accepted && data.action == 'update') {
+              setUserGroupRequests([...userGroupRequests.filter((request) => request.id != data.id)]);
+              console.log('update');
+              groupMembers.push(data);
+              setGroupMembers([...groupMembers]);
+            } else if(data.request_accepted && data.action == 'destroy') {
+              console.log('1 destroy');
+              setGroupMembers([...groupMembers.filter((request) => request.id != data.id)]);
+            } else if(!data.request_accepted && data.action == 'destroy') {
+              console.log('2 destroy');
+              setUserGroupRequests([...userGroupRequests.filter((request) => request.id != data.id)]);
+            } else if(!data.request_accepted && data.action == 'create') {
+              userGroupRequests.push(data);
+              console.log('2 create', userGroupRequests);
+              setUserGroupRequests([...userGroupRequests])
+            }
           }
         },
         connected: () => {console.log('USER GROUP CONNECTED');},
@@ -61,24 +83,21 @@ export default function Group() {
     return () => CableApp.cable.disconnect()
   }, [CableApp.subscriptions, userGroupRequests, setUserGroupRequests, groupMembers, setGroupMembers]);
 
-
   return (
     <>
       <Nav/>
       {loading ?
         <LoadingComponent/> :
-      !group.user_exists_in_group?.request_accepted ?
+      !group.user_exists_in_group?.request_accepted || group.user_exists_in_group?.secret_group_invitation ?
         <UserNotAGroupMemberComponent group={group}/> :
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className='grid grid-cols-4 gap-x-8 pt-6'>
             <div className='col-span-3 min-h-[350px]'>
-              <AppContext.Provider value={{open, setOpen, group, setGroup, setNotices, setuserLoggedIn}}>
-                <GroupFormModal action='update'/>
-                <div className="flex flex-row w-full mt-6 items-center">
-                  <h1 className="font-semibold text-4xl mr-4 capitalize text-gray-600">{group.name}</h1>
-                  {currentUser.id == group.user_id && <button onClick={() => setOpen(true)} className="text-3xl inline-block text-green-600"><FontAwesomeIcon icon={faCog} /></button>}
-                </div>
-              </AppContext.Provider>
+              <GroupFormModal action='update'/>
+              <div className="flex flex-row w-full mt-6 items-center">
+                <h1 className="font-semibold text-4xl mr-4 capitalize text-gray-600">{group.name}</h1>
+                {currentUser.id == group.user_id && <button onClick={() => setOpen(true)} className="text-3xl inline-block text-green-600"><FontAwesomeIcon icon={faCog} /></button>}
+              </div>
               <PostForm buttonTitle="+ Post"/>
 
               <div className='w-full pb-10'>
@@ -130,19 +149,11 @@ export default function Group() {
                 </div>
               </div>
             </div>
-            <div className='col-span-1 min-h-[50px] mt-6'>
-              <input
-                id="email-address"
-                name="groupName"
-                type="text"
-                autoComplete="name"
-                className="mb-4 relative flex-grow block w-full appearance-none rounded-[3px] border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:z-10 focus:border-green-500 focus:outline-none focus:ring-green-500 sm:text-sm"
-                placeholder="Invite @user"
-              />
-
-              <h1 className="font-bold text-2xl inline-block mr-3 text-gray-600">Members</h1>
+            <div className='col-span-1 min-h-[50px] mt-6 pt-2'>
+              {group.group_access == 'is_secret' && <UsernameListComponent/>}
               <GroupMembersComponent group={group}/>
               <GroupUserRequestsComponent group={group}/>
+              {false && group.group_access == 'is_secret' && <SecretGroupInvitesComponent group={group}/>}
             </div>
           </div>
         </div>

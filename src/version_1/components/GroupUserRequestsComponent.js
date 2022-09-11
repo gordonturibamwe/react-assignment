@@ -46,7 +46,6 @@ export default function GroupUserRequestsComponent({...props}) {
       path: `destroy-group-request/${requestId}`,
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
-      console.log(response.data.group_requests);
       if(response.status == 200) {
         setNotices(['User deleted from group.'])
       } else {
