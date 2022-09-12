@@ -7,12 +7,9 @@ import { get, post, patch, destroy } from '../helpers/apiCallsHelper';
 
 export default function UsernameListComponent() {
   const {
-    currentUser, setCurrentUser,
     setuserLoggedIn,
     setAlerts, setNotices,
-    open, setOpen,
     group, setGroup,
-    userGroupRequests, setUserGroupRequests,
     groupMembers, setGroupMembers,
     searchUsers, setUserchUsers,
     CableApp

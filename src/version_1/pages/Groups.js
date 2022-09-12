@@ -1,6 +1,5 @@
 import React, { useEffect, createRef, useContext, useLayoutEffect, useState } from 'react'
 import { useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { AppContext } from '../../App';
 import GroupFormModal from '../components/GroupFormModal';
 import Nav from '../components/Nav';
@@ -19,24 +18,20 @@ export default function Groups() {
       path: `all-groups${filter}`,
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
-      console.log('---', response.data);
       if(response.status == 200) {
         setGroups(groups => [...response.data['groups']]);
         setuserLoggedIn(true);
       } else {
         setAlerts(arr => response.data.errors);
       }
-      console.log('+++', groups);
     });
   }, [filter]);
 
   const joinGroup = (event, groupId) => {
-    console.log(event, groupId);
     post({
       path: `join-public-group/${groupId}`,
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
-      console.log(response.data);
       if(response.status == 200) {
         setNotices(['Successfully Joined group.']);
       } else {
@@ -46,12 +41,10 @@ export default function Groups() {
   };
 
   const requestToJoinPrivateGroup = (event, groupId) => {
-    console.log(event, groupId);
     post({
       path: `request-to-join-private-group/${groupId}`,
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
-      console.log(response.data);
       if(response.status == 200) {
         setNotices(['Request sent to Group.']);
       } else {
@@ -73,7 +66,6 @@ export default function Groups() {
     CableApp.cable.subscriptions.create(
       {channel: 'GroupsChannel'}, {
         received: (data) => {
-          console.log('FROM group----', data);
           setCurrentUser(currentUser);
           if(data['action'] == 'create') {
             groups.unshift(data);
@@ -85,8 +77,6 @@ export default function Groups() {
             setGroups([...groups]);
           }
         },
-        connected: () => {console.log('CONNECTED');},
-        disconnected: (e) => console.log('DISCONNECTED', e),
       },
     );
     return () => CableApp.cable.disconnect()

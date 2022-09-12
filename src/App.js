@@ -1,5 +1,5 @@
-import React, { useState, createContext, useLayoutEffect } from "react";
-import { BrowserRouter, Routes, Route} from 'react-router-dom';
+import React, { useState, createContext, useLayoutEffect, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Link} from 'react-router-dom';
 import Login from "./version_1/pages/Login";
 import Register from "./version_1/pages/Register";
 import Groups from "./version_1/pages/Groups";
@@ -10,6 +10,8 @@ import AlertComponent from "./version_1/components/AlertComponent";
 import NoticeComponent from "./version_1/components/NoticeComponent";
 import { get } from "./version_1/helpers/apiCallsHelper";
 import NotFound from "./version_1/pages/NotFound";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBell } from '@fortawesome/free-solid-svg-icons'
 import LoadingComponent from "./version_1/components/LoadingComponent";
 import actionCable from 'actioncable'
 
@@ -32,7 +34,8 @@ function App() {
   const [userGroupRequests, setUserGroupRequests] = useState([]); // For holding userGroupRequests
   const [groupMembers, setGroupMembers] = useState([]); // For holding groupMembers
   const [searchUsers, setUserchUsers] = useState([]); // For holding groupMembers
-  const [groupInvites, setGroupInvites,] = useState([]); // For holding groupMembers
+  const [groupInvites, setGroupInvites] = useState([]); // For holding groupMembers
+  const [notifications, setNotifications] = useState([]); // For holding groupMembers
 
   useLayoutEffect(() => {
     get({
@@ -48,6 +51,27 @@ function App() {
     });
   }, []);
 
+  useEffect(() => { // CONNECTING ACTION CABLE TO GROUPSCHANNEL
+    CableApp.cable.subscriptions.create(
+      {channel: 'NotificationsChannel'}, {
+        received: (data) => {
+          console.log('++++', data);
+          console.log('---~~>', currentUser);
+          // setCurrentUser(currentUser);
+          // if(currentUser.id == data.recipient.id) {
+            // notifications.unshift(data)
+            setNotifications([...notifications]);
+            console.log('ISIDE', notifications);
+          // }
+        },
+        connected: () => {console.log('NOTIFICATIONS CONNECTED');},
+        disconnected: (e) => console.log('NOTIFICATIONS DISCONNECTED', e),
+      },
+    );
+    return () => CableApp.cable.disconnect()
+  }, [CableApp.subscriptions, setNotifications]);
+
+
   return loading ? <LoadingComponent/> : (
     <AppContext.Provider value={{ // AppContext.Provider context holds all the applications temp states
         CableApp, // Holding Websocket connections
@@ -60,10 +84,31 @@ function App() {
         userGroupRequests, setUserGroupRequests,
         groupMembers, setGroupMembers,
         searchUsers, setUserchUsers,
-        groupInvites, setGroupInvites
+        groupInvites, setGroupInvites,
+        notifications, setNotifications
       }}>
       {alerts?.length > 0 && <AlertComponent/> /* Show Alerts */}
       {notices?.length > 0 && <NoticeComponent/> /* Show Notices */}
+
+      {/* {notifications.length > 0 && */}
+      <div className="alert-toast fixed z-[100] top-[80px] right-[13px] max-w-[250px] w-full">
+        {notifications.map((notification) => (
+          currentUser.id == notification.recipient.id &&
+          <span key={notification.recipient.id} className="close cursor-pointer mb-3 flex flex-row items-start justify-start w-full p-6 bg-orange-500 rounded shadow-md text-white" title="close" htmlFor="footertoast">
+            <FontAwesomeIcon icon={faBell} className="mr-4 mt-[5px] text-lg" />
+            <p className="opacity-80 text-sm">{notification.message} {currentUser.username}</p>
+            <svg className="fill-current text-white absolute right-4 top-4 h-5" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+              <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+            </svg>
+          </span>
+        ))}
+      </div>
+
+      {/* message: message,
+      recipient: recipient,
+      sender: sender,
+      path: path */}
+
 
       <BrowserRouter>
         <Routes>
