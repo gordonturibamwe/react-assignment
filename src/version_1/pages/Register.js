@@ -57,7 +57,7 @@ export default function Register() {
             <div className="-space-y-px rounded-[4px] shadow-sm">
               <div>
                 <label htmlFor="email-address" className="sr-only">
-                  Email address
+                  Username
                 </label>
                 <input
                   id="email-address"

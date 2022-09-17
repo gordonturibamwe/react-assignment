@@ -5,6 +5,7 @@ import GroupFormModal from '../components/GroupFormModal';
 import Nav from '../components/Nav';
 import { get, post } from '../helpers/apiCallsHelper';
 import GroupListComponent from '../components/GroupListComponent';
+import SEO from '../components/SEO';
 
 export default function Groups() {
   const {setCurrentUser, setuserLoggedIn, setAlerts, setNotices, currentUser, setOpen, CableApp, setGroup} = useContext(AppContext);
@@ -68,8 +69,7 @@ export default function Groups() {
         received: (data) => {
           setCurrentUser(currentUser);
           if(data['action'] == 'create') {
-            groups.unshift(data);
-            setGroups([...groups]);
+            setGroups([data, ...groups]);
           } else if(data['action'] == 'update') {
             const _group = groups.find((gp) => gp.id == data.id);
             const _groupIndex = groups.indexOf(_group);
@@ -85,6 +85,13 @@ export default function Groups() {
   //  loading ? <LoadingComponent/> :
   return(
     <div>
+      <SEO
+        title='Groups'
+        description='This is a description of the group'
+        image='https://images.unsplash.com/photo-1661961110144-12ac85918e40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80'
+        imageWidth='500'
+        imageHeight='500'
+      />
       <Nav/>
       <GroupFormModal/>
       <div className="max-w-4xl mx-auto  px-4 sm:px-6 lg:px-8 flex">

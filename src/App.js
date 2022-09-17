@@ -1,5 +1,5 @@
 import React, { useState, createContext, useLayoutEffect, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Link} from 'react-router-dom';
+import { Routes, Route, Link} from 'react-router-dom';
 import Login from "./version_1/pages/Login";
 import Register from "./version_1/pages/Register";
 import Groups from "./version_1/pages/Groups";
@@ -109,20 +109,17 @@ function App() {
       sender: sender,
       path: path */}
 
-
-      <BrowserRouter>
-        <Routes>
-          {!userLoggedIn && <Route path="/login" exact element={<Login/>}/>}
-          {!userLoggedIn && <Route path="/register" exact element={<Register/>}/>}
-          <Route path="/" element={<ProtectedRoutes />}>
-            <Route path="/" element={<Groups />}/>
-            <Route path="/group/:id" exact element={<Group />}/>
-            <Route path="/post/:id" exact element={<Post />}/>
-            <Route path="/logout" exact element={<Login />}/>
-          </Route>
-          <Route path="/*" element={<NotFound/>  /* To redirect to NoFound if url is not found */}/>
-        </Routes>
-      </BrowserRouter>
+      <Routes>
+        {!userLoggedIn && <Route path="/login" exact element={<Login/>}/>}
+        {!userLoggedIn && <Route path="/register" exact element={<Register/>}/>}
+        <Route path="/" element={<ProtectedRoutes />}>
+          <Route path="/" element={<Groups />}/>
+          <Route path="/group/:id" exact element={<Group />}/>
+          <Route path="/post/:id" exact element={<Post />}/>
+          <Route path="/logout" exact element={<Login />}/>
+        </Route>
+        <Route path="/*" element={<NotFound/>  /* To redirect to NoFound if url is not found */}/>
+      </Routes>
     </AppContext.Provider>
   )
 }

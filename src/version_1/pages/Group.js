@@ -13,6 +13,8 @@ import GroupMembersComponent from '../components/GroupMembersComponent'
 import GroupUserRequestsComponent from '../components/GroupUserRequestsComponent'
 import SecretGroupInvitesComponent from '../components/SecretGroupInvitesComponent'
 import UsernameListComponent from '../components/UsernameListComponent';
+import SEO from '../components/SEO';
+import GroupPostsComponent from '../components/GroupPostsComponent';
 
 export default function Group() {
   const {
@@ -85,6 +87,13 @@ export default function Group() {
 
   return (
     <>
+      <SEO
+        title={group.name}
+        description='This is a description of the group'
+        image='https://images.unsplash.com/photo-1661961110144-12ac85918e40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80'
+        imageWidth='500'
+        imageHeight='500'
+      />
       <Nav/>
       {loading ?
         <LoadingComponent/> :
@@ -98,56 +107,9 @@ export default function Group() {
                 <h1 className="font-semibold text-4xl mr-4 capitalize text-gray-600">{group.name}</h1>
                 {currentUser.id == group.user_id && <button onClick={() => setOpen(true)} className="text-3xl inline-block text-green-600"><FontAwesomeIcon icon={faCog} /></button>}
               </div>
-              <PostForm buttonTitle="+ Post"/>
+              <PostForm id={group.id} buttonTitle="+ Post"/>
 
-              <div className='w-full pb-10'>
-                <h1 className="font-semibold text-3xl mr-4 capitalize text-gray-600 mt-4">All Posts</h1>
-                <div className="mt-6 border rounded-[4px] shadow-sm" id="dfdfdf">
-                  <div className='p-5 pb-2'>
-                    <h1 className="font-medium text-3xl inline-block mb-3 text-gray-600 w-4/5 font-serif">For a More Creative Brain Follow These 5 Steps</h1>
-                    <div className="mt-0 post text-sm text-gray-600"> early all great ideas follow a similar creative process and this article explains how this process works. Understanding this is important because creative thinking is one of the most useful skills you can possess. Nearly every problem you face in work and in life can benefit from innovative solutions, lateral thinking, and creative ideas..</div>
-                    <span className="mt-4 block text-xs text-gray-400 font-normal" id="_<%= post.id %>">
-                      <span>Last comment 4 mins ago</span> .
-                      <span className="mr-1 ml-1 inline-block"><a href='/'>Edit</a></span> .
-                      <span className="mr-1 ml-1 inline-block"><a href='/'>Delete</a></span> .
-                      <span className="mr-1 ml-1 inline-block">Created by Username</span>
-                    </span>
-                  </div>
-                  <a href='/post/dsfsfs' className='bg-gray-50 block w-full px-5 py-3 mt-3 text-gray-400 hover:text-gray-500 rounded-b-[4px] border-t'>
-                    <p className='truncate text-sm font-medium text-green-600'>View Post <span className='inline-block ml-2 text-xs'><FontAwesomeIcon icon={faArrowRight} /></span></p>
-                  </a>
-                </div>
-
-                <div className="mt-6 border rounded-[4px] shadow-sm" id="dfdfdf">
-                  <div className='p-5 pb-2'>
-                    <h1 className="font-medium text-3xl inline-block mb-3 text-gray-600 w-4/5 font-serif">The Surprising Benefits of Journaling One Sentence Every Day</h1>
-                    <div className="mt-0 post text-sm text-gray-600">Throughout the 1980s and 1990s, the “Queen of All Media” built a brand that stretched far beyond the television screen. She went on to become a billionaire, a well-regarded philanthropist, and a recipient of the Presidential Medal of Freedom. And as she was busy working toward these otherworldly accomplishments, Oprah relied on a simple habit: journaling..</div>
-                    <span className="mt-4 block text-xs text-gray-400 font-normal" id="_<%= post.id %>">
-                      <span>Last comment 29 days ago</span> .
-                      <span className="mr-1 ml-1 inline-block">Created by Kalanzi</span>
-                    </span>
-                  </div>
-                  <a href='/post/dsfsfs' className='bg-gray-50 block w-full px-5 py-3 mt-3 text-gray-400 hover:text-gray-500 rounded-b-[4px] border-t'>
-                    <p className='truncate text-sm font-medium text-green-600'>View Post <span className='inline-block ml-2 text-xs'><FontAwesomeIcon icon={faArrowRight} /></span></p>
-                  </a>
-                </div>
-
-                <div className="mt-6 border rounded-[4px] shadow-sm" id="dfdfdf">
-                  <div className='p-5 pb-2'>
-                    <h1 className="font-medium text-3xl inline-block mb-3 text-gray-600 w-4/5 font-serif">The true story of the fake US embassy in Ghana</h1>
-                    <div className="mt-0 post text-sm text-gray-600">The story was an immediate hit. “In less than an hour we were getting 20,000 views on the website for that story alone,” Emmanuel Dogbevi, the website’s managing editor, told me. Two days later, the news agency Reuters picked up the story and it swiftly became an international sensation.</div>
-                    <span className="mt-4 block text-xs text-gray-400 font-normal" id="_<%= post.id %>">
-                      <span>Last comment 4 mins ago</span> .
-                      <span className="mr-1 ml-1 inline-block"><a href='/'>Edit</a></span> .
-                      <span className="mr-1 ml-1 inline-block"><a href='/'>Delete</a></span> .
-                      <span className="mr-1 ml-1 inline-block">Created by Username</span>
-                    </span>
-                  </div>
-                  <a href='/post/dsfsfs' className='bg-gray-50 block w-full px-5 py-3 mt-3 text-gray-400 hover:text-gray-500 rounded-b-[4px] border-t'>
-                    <p className='truncate text-sm font-medium text-green-600'>View Post <span className='inline-block ml-2 text-xs'><FontAwesomeIcon icon={faArrowRight} /></span></p>
-                  </a>
-                </div>
-              </div>
+              <GroupPostsComponent/>
             </div>
             <div className='col-span-1 min-h-[50px] mt-6 pt-2'>
               {group.group_access == 'is_secret' && currentUser.id == group.user_id && <UsernameListComponent/>}

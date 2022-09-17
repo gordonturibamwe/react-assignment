@@ -109,3 +109,11 @@ trix-editor pre {
   color: #717171;
   margin: auto 3px;
 }
+trix-editor:focus {
+  border-color: #22c55e;
+  --tw-ring-color: #22c55e;
+  --tw-ring-offset-width: 2px;
+  outline: 1px solid #22c55e;
+  /* outline-offset: 2px; */
+}
+aside.emoji-picker-react {z-index: 100;}

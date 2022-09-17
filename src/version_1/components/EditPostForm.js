@@ -1,4 +1,4 @@
-import React, { useContext, useLayoutEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import Trix from "trix";
 import { ReactTrixRTEInput, ReactTrixRTEToolbar } from "react-trix-rte";
 import { TOOLBAR_ACTION_OPTS } from '../helpers/constantsHelper';
@@ -8,7 +8,7 @@ import { AppContext } from '../../App';
 import { get, post } from '../helpers/apiCallsHelper';
 
 
-export default function PostForm({...props}) {
+export default function EditPostForm({...props}) {
   let [value, setValue] = useState();
   let nameTagStartPoint;
   let [users, setUsers] = useState([]);
@@ -16,6 +16,8 @@ export default function PostForm({...props}) {
   const imgRef = useRef(null);
   const usernameRef = useRef(null);
   const titleRef = useRef(null);
+  const editorRef = useRef(null);
+
   const {
     setuserLoggedIn,
     setAlerts, setNotices,
@@ -24,10 +26,15 @@ export default function PostForm({...props}) {
     CableApp
   } = useContext(AppContext);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    // const trixEditor = document.querySelector(props.id);
     const trixEmojiButton = document.querySelector('[data-trix-action="emoji"]');
     trixEmojiButton.addEventListener('click', (event) => emojiRef.current.classList.remove('hidden'));
-  });
+    // titleRef.current.value = props.title;
+    // // trixEditor.editor.value = props.content;
+    // trixEditor.editor.loadHTML(props.content)
+    // console.log('---', editorRef.current, titleRef.current.value, trixEditor.editor.value)
+  }, []);
 
   function trixEditorOnChange(event) {
     setValue(event.target.value);
@@ -55,7 +62,7 @@ export default function PostForm({...props}) {
   }
 
   const onEmojiClick = (event, emojiObject) => {
-    const trixEditor = document.querySelector('trix-editor');
+    const trixEditor = document.querySelector(`[input="${props.id}"]`);
     // const cursorPosition = trixEditor.editor.getSelectedRange();
     emojiRef.current.classList.add('hidden');
     // trixEditor.editor.setSelectedRange(cursorPosition);
@@ -143,7 +150,7 @@ export default function PostForm({...props}) {
             Email address
           </label>
           <input
-            id="title"
+            id={`title-${props.postId}`}
             name="title"
             ref={titleRef}
             type="text"
@@ -153,19 +160,19 @@ export default function PostForm({...props}) {
             placeholder="Title"
           />
         </div>
-        <ReactTrixRTEToolbar toolbarId="react-trix-rte-editor" customToolbarActions={TOOLBAR_ACTION_OPTS} disableGroupingAction='false' toolbarActions={["attachImage", "emoji", "bold", "italic", "strike"]}/>
+        <ReactTrixRTEToolbar toolbarId={props.postId} customToolbarActions={TOOLBAR_ACTION_OPTS} disableGroupingAction='false' toolbarActions={["attachImage", "emoji", "bold", "italic", "strike"]}/>
         <div className='relative w-full'>
           <div className='absolute hidden' ref={emojiRef}>
             <Picker onEmojiClick={onEmojiClick} />
           </div>
         </div>
-        <ReactTrixRTEInput {...{
+        <ReactTrixRTEInput id={props.postId} {...{
           onChange: (event) => trixEditorOnChange(event),
           onEditor: (editor) => {console.log(`Editor callback: `, editor)},
           placeholder: 'Start typing...',
           onAttachmentAdd: (event) => attachment(event),
           railsBlobUrl: (url) => console.log('URL', url),
-          toolbarId: 'react-trix-rte-editor',
+          toolbarId: props.postId,
           toolbarActions: ["attachFiles"]
         }}/>
         <div className='flex w-full justify-end pt-3'>
