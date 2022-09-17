@@ -79,7 +79,7 @@ export default function GroupPostsComponent() {
     console.log('----', post);
     const title = document.querySelector(`input#title-${post.id}`);
     const trixEditor = document.querySelector(`[input="${post.id}"]`);
-    document.querySelector(`div#form-${post.id}`).classList.toggle('hidden')
+    document.querySelector(`div#form-${post.id}`).classList.toggle('hidden');
     console.log('=====', trixEditor);
     title.value = post.title;
     trixEditor.value = post.content;

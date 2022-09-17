@@ -5,7 +5,7 @@ import { TOOLBAR_ACTION_OPTS } from '../helpers/constantsHelper';
 import Picker from 'emoji-picker-react';
 import '../../App.css'
 import { AppContext } from '../../App';
-import { get, post } from '../helpers/apiCallsHelper';
+import { get, patch } from '../helpers/apiCallsHelper';
 
 
 export default function EditPostForm({...props}) {
@@ -39,7 +39,7 @@ export default function EditPostForm({...props}) {
   function trixEditorOnChange(event) {
     setValue(event.target.value);
     if(event.target.value.includes('@')) {
-      const trixEditor = document.querySelector('trix-editor');
+      const trixEditor = document.querySelector(`[input="${props.id}"]`);
       const v = trixEditor.editor.getSelectedRange()
       console.log(v, nameTagStartPoint === null, value)
       if(!nameTagStartPoint) nameTagStartPoint = v;
@@ -70,9 +70,10 @@ export default function EditPostForm({...props}) {
   };
 
   function submitForm(event) {
+    console.log('----', props.id)
     event.preventDefault();
-    const trixEditor = document.querySelector('trix-editor');
-    console.log(trixEditor.editor, titleRef.current);
+    const trixEditor = document.querySelector(`[input="${props.postId}"]`)
+    console.log(trixEditor, titleRef.current);
     console.log(trixEditor.editor?.composition?.attachments);
     console.log(trixEditor.editor);
     console.log(JSON.stringify(trixEditor.editor));
@@ -82,15 +83,14 @@ export default function EditPostForm({...props}) {
     console.log(trixEditor.value);
     console.log('PROPS', props);
     if (true)
-      post({
-        path: "create-post",
+      patch({
+        path: "update-post/" + props.postId,
         headers: {headers: {
           'Authorization': `Bearer ${localStorage.getItem("token")}`,
           'Content-Type': 'application/json',
           'Content-Type':'multipart/form-data'
         }},
         formData: {
-          id: props.id,
           title: titleRef.current.value,
           content: trixEditor.value,
         }
@@ -99,6 +99,7 @@ export default function EditPostForm({...props}) {
           setNotices(arr => ['Post successfuly saved.']);
           trixEditor.value = ''
           titleRef.current.value = ''
+          document.querySelector(`div#form-${props.prostId}`).classList.add('hidden');
         } else {
           setAlerts(arr => response.data?.errors); // Display errors if registration is unsuccessful
         }
