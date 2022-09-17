@@ -109,12 +109,13 @@ export default function GroupFormModal({...props}) {
                   </button>
                 </div>
                 <div className=" w-full">
-                  <div className="mt-3 text-center sm:mt-0 sm:text-left">
+                  <div className="mt-3 sm:mt-0 sm:text-left">
                     <Dialog.Title as="h3" className="text-3xl font-medium leading-6 text-gray-900">
-                      Create/Edit Group
+                      {props.formTitle}
                     </Dialog.Title>
-                    <div className="my-5 w-full flex flex-row items-start mt-8">
-                      <div className="mr-6 pr-6 max-w-200">
+                    <hr className='mt-6 -ml-10 -mr-10 border-gray-100'/>
+                    <div className="my-5 w-full sm:flex flex-row items-start mt-8">
+                      <div className="sm:mr-6 sm:pr-6 max-w-200">
                         <h1 className=" text-2xl mb-3">Group name:</h1>
                         <p className="font-light mb-3 text-sm text-gray-400">People will see this name before joining your group</p>
                       </div>
@@ -131,19 +132,19 @@ export default function GroupFormModal({...props}) {
                         placeholder="Group name"
                       />
                     </div>
-                    <div className="my-5 w-full flex flex-row items-start mt-8">
-                      <div className="mr-6 pr-6 max-w-200">
+                    <div className="my-5 w-full sm:flex flex-row items-start mt-8">
+                      <div className="sm:mr-6 sm:pr-6 max-w-200">
                         <h1 className=" text-2xl mb-3">Access control</h1>
                         <p className="font-light mb-3 text-sm text-gray-400">Open means anyone can join. Private means you have to accept their requests. Secret means that you have invited them to join.</p>
                       </div>
                       <div className="block w-full">
                         <div className="flex flex-row justify-between plan group w-full" id="radioBtns"  onChange={radioIput}>
                           <input type="radio" name="group_access" id="is_public" value="is_public" className='hidden'/>
-                          <label htmlFor="is_public" ref={isPublicRef} className={isGroupAccess(groupAccess == 'is_public') + ' cursor-pointer inline-flex w-full mx-3 justify-center rounded-[3px] border px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:mt-0'}>Public</label>
+                          <label htmlFor="is_public" ref={isPublicRef} className={isGroupAccess(groupAccess == 'is_public') + ' cursor-pointer inline-flex w-full sm:mx-3 mr-3 justify-center rounded-[3px] border px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:mt-0'}>Public</label>
                           <input type="radio" name="group_access" id="is_private" value="is_private" className='hidden'/>
-                          <label htmlFor="is_private" ref={isPrivateRef} className={isGroupAccess(groupAccess == 'is_private') + ' cursor-pointer inline-flex w-full mx-3 justify-center rounded-[3px] border px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:mt-0'}>Private</label>
+                          <label htmlFor="is_private" ref={isPrivateRef} className={isGroupAccess(groupAccess == 'is_private') + ' cursor-pointer inline-flex w-full sm:mx-3 mr-3 justify-center rounded-[3px] border px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:mt-0'}>Private</label>
                           <input type="radio" name="group_access" id="is_secret" value="is_secret" className='hidden'/>
-                          <label htmlFor="is_secret" ref={isSecretRef} className={isGroupAccess(groupAccess == 'is_secret') + ' cursor-pointer inline-flex w-full mx-3 justify-center rounded-[3px] border px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:mt-0'}>Secret</label>
+                          <label htmlFor="is_secret" ref={isSecretRef} className={isGroupAccess(groupAccess == 'is_secret') + ' cursor-pointer inline-flex w-full sm:mx-3 mr-0 justify-center rounded-[3px] border px-4 py-2 text-base text-gray-500 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:mt-0'}>Secret</label>
                         </div>
                       </div>
                     </div>

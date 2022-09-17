@@ -11,12 +11,10 @@ import { get, patch } from '../helpers/apiCallsHelper';
 export default function EditPostForm({...props}) {
   let [value, setValue] = useState();
   let nameTagStartPoint;
-  let [users, setUsers] = useState([]);
   const emojiRef = useRef(null);
   const imgRef = useRef(null);
   const usernameRef = useRef(null);
   const titleRef = useRef(null);
-  const editorRef = useRef(null);
 
   const {
     setuserLoggedIn,
@@ -28,7 +26,8 @@ export default function EditPostForm({...props}) {
 
   useEffect(() => {
     // const trixEditor = document.querySelector(props.id);
-    const trixEmojiButton = document.querySelector('[data-trix-action="emoji"]');
+    const trixEmojiButtons = document.querySelector('button[data-trix-action="emoji"]');
+    const trixEmojiButton = document.querySelector(`div#emoji-${props.postId}`);
     trixEmojiButton.addEventListener('click', (event) => emojiRef.current.classList.remove('hidden'));
     // titleRef.current.value = props.title;
     // // trixEditor.editor.value = props.content;
@@ -39,30 +38,15 @@ export default function EditPostForm({...props}) {
   function trixEditorOnChange(event) {
     setValue(event.target.value);
     if(event.target.value.includes('@')) {
-      const trixEditor = document.querySelector(`[input="${props.id}"]`);
-      const v = trixEditor.editor.getSelectedRange()
-      console.log(v, nameTagStartPoint === null, value)
-      if(!nameTagStartPoint) nameTagStartPoint = v;
-      console.log('VALUE', nameTagStartPoint);
-      console.log('++=', trixEditor.editor.setSelectedRange([0, 4]))
-      // trixEditor.editor.deleteInDirection("backward");
-      // const pos = trixEditor.editor.getClientRectAtPosition(0);
-      // const ppp = trixEditor.editor.getSelectedRange();
-      // usernameRef.current.style.left = `${parseInt(125)}px` //`${parseInt(pos.x + ppp[0])}px`;
-      // usernameRef.current.style.top = `${parseInt(125)}px` //`${parseInt(pos.y + ppp[1] + 20)}px`;
+      const trixEditor = document.querySelector(`[input="${props.postId}"]`);
       usernameRef.current.classList.remove('hidden');
-      // console.log('--', trixEditor.editor.getClientRectAtPosition(0), `${parseInt(pos.x + ppp[0])}px`);
-      // console.log('-->>', ppp);
-      // trixEditor.editor.insertHTML('<div>HERE IS UL</div>');
-      // trixEditor.editor.insertHTML(` <pre>${event.target.textContent}</pre> <div>, </div>`);
-      // console.log('--++',trixEditor.selectionStart, window.getSelection());
     } else {
       usernameRef.current.classList.add('hidden');
     }
   }
 
   const onEmojiClick = (event, emojiObject) => {
-    const trixEditor = document.querySelector(`[input="${props.id}"]`);
+    const trixEditor = document.querySelector(`[input="${props.postId}"]`);
     // const cursorPosition = trixEditor.editor.getSelectedRange();
     emojiRef.current.classList.add('hidden');
     // trixEditor.editor.setSelectedRange(cursorPosition);
@@ -99,7 +83,8 @@ export default function EditPostForm({...props}) {
           setNotices(arr => ['Post successfuly saved.']);
           trixEditor.value = ''
           titleRef.current.value = ''
-          document.querySelector(`div#form-${props.prostId}`).classList.add('hidden');
+          document.querySelector(`div#form-${props.postId}`).classList.toggle('hidden');
+          document.querySelector(`div#postContent-${props.postId}`).classList.toggle('hidden');
         } else {
           setAlerts(arr => response.data?.errors); // Display errors if registration is unsuccessful
         }
@@ -113,7 +98,7 @@ export default function EditPostForm({...props}) {
   }
 
   function taggingUsername(event) {
-    const trixEditor = document.querySelector('trix-editor');
+    const trixEditor = document.querySelector(`[input="${props.postId}"]`);
     trixEditor.editor.deleteInDirection("backward");
     trixEditor.editor.insertHTML(` <pre>${event.target.textContent}</pre> <div>, </div>`);
     console.log(event.target.textContent);
@@ -143,6 +128,15 @@ export default function EditPostForm({...props}) {
       });
   }
 
+  const cancelEdit = (event) => {
+    event.preventDefault();
+    const trixEditor = document.querySelector(`[input="${props.postId}"]`);
+    document.querySelector(`div#form-${props.postId}`).classList.toggle('hidden');
+    document.querySelector(`div#postContent-${props.postId}`).classList.toggle('hidden');
+    trixEditor.value = ''
+    titleRef.current.value = ''
+  }
+
   return (
     <div>
       <form className='block w-full mt-6 relative' onSubmit={submitForm}>
@@ -163,7 +157,7 @@ export default function EditPostForm({...props}) {
         </div>
         <ReactTrixRTEToolbar toolbarId={props.postId} customToolbarActions={TOOLBAR_ACTION_OPTS} disableGroupingAction='false' toolbarActions={["attachImage", "emoji", "bold", "italic", "strike"]}/>
         <div className='relative w-full'>
-          <div className='absolute hidden' ref={emojiRef}>
+          <div className='absolute hidden' id={`emoji-${props.postId}`}>
             <Picker onEmojiClick={onEmojiClick} />
           </div>
         </div>
@@ -177,7 +171,8 @@ export default function EditPostForm({...props}) {
           toolbarActions: ["attachFiles"]
         }}/>
         <div className='flex w-full justify-end pt-3'>
-          <button type="submit" className='rounded-[4px]  px-6 py-2 bg-green-600 hover:bg-green-700 border-green-800 text-white block text-sm font-medium shadow-sm '>{props.buttonTitle}</button>
+          <span onClick={cancelEdit} className='rounded-[4px]  px-6 py-2 bg-white hover:text-gray-500 text-gray-400 block text-sm font-medium cursor-pointer'>Cancel</span>
+          <button type="submit" className='rounded-[4px]  px-6 py-2 bg-green-600 hover:bg-green-700 border-green-800 text-white block text-sm font-medium shadow-sm '>Save</button>
         </div>
 
         <div className="overflow-y-hidden bg-white absolute w-[184px] z-10 hidden top-[50%] left-[30px]" ref={usernameRef}>
@@ -208,3 +203,21 @@ export default function EditPostForm({...props}) {
     </div>
   )
 }
+
+
+
+// const v = trixEditor.editor.getSelectedRange();
+// console.log(v, nameTagStartPoint === null, value)
+// if(!nameTagStartPoint) nameTagStartPoint = v;
+// console.log('VALUE', nameTagStartPoint);
+// console.log('++=', trixEditor.editor.setSelectedRange([0, 4]));
+// trixEditor.editor.deleteInDirection("backward");
+// const pos = trixEditor.editor.getClientRectAtPosition(0);
+// const ppp = trixEditor.editor.getSelectedRange();
+// usernameRef.current.style.left = `${parseInt(125)}px` //`${parseInt(pos.x + ppp[0])}px`;
+// usernameRef.current.style.top = `${parseInt(125)}px` //`${parseInt(pos.y + ppp[1] + 20)}px`;
+// console.log('--', trixEditor.editor.getClientRectAtPosition(0), `${parseInt(pos.x + ppp[0])}px`);
+// console.log('-->>', ppp);
+// trixEditor.editor.insertHTML('<div>HERE IS UL</div>');
+// trixEditor.editor.insertHTML(` <pre>${event.target.textContent}</pre> <div>, </div>`);
+// console.log('--++',trixEditor.selectionStart, window.getSelection());

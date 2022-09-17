@@ -78,8 +78,8 @@ export default function Group() {
             }
           }
         },
-        connected: () => {console.log('USER GROUP CONNECTED');},
-        disconnected: (e) => console.log('USER GROUP DISCONNECTED', e),
+        connected: ()=>{},
+        disconnected: ()=>{},
       },
     );
     return () => CableApp.cable.disconnect()

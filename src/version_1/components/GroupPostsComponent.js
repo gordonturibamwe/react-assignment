@@ -24,7 +24,6 @@ export default function GroupPostsComponent() {
       path: `group-posts/${group.id}`,
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
-      console.log(response.data.posts)
       if(response.status == 200) {
         setPosts([...response.data.posts]);
       }
@@ -37,38 +36,22 @@ export default function GroupPostsComponent() {
     CableApp.cable.subscriptions.create(
       {channel: 'PostsChannel'}, {
         received: (data) => {
-          console.log(data);
           setCurrentUser(currentUser);
           if(data.group_id == group.id) {
-            setPosts([data, ...posts]);
-
-
-            // posts.push(data);
-            // setPosts([...posts, data]);
-            // if(data.request_accepted && data.action == 'create') {
-            //   console.log('1 created');
-            //   groupMembers.push(data);
-            //   setGroupMembers([...groupMembers]);
-            // } else if(data.request_accepted && data.action == 'update') {
-            //   setUserGroupRequests([...userGroupRequests.filter((request) => request.id != data.id)]);
-            //   console.log('update');
-            //   groupMembers.push(data);
-            //   setGroupMembers([...groupMembers]);
-            // } else if(data.request_accepted && data.action == 'destroy') {
-            //   console.log('1 destroy');
-            //   setGroupMembers([...groupMembers.filter((request) => request.id != data.id)]);
-            // } else if(!data.request_accepted && data.action == 'destroy') {
-            //   console.log('2 destroy');
-            //   setUserGroupRequests([...userGroupRequests.filter((request) => request.id != data.id)]);
-            // } else if(!data.request_accepted && data.action == 'create') {
-            //   userGroupRequests.push(data);
-            //   console.log('2 create', userGroupRequests);
-            //   setUserGroupRequests([...userGroupRequests])
-            // }
+            if(data.action == 'create') {
+              setPosts([data, ...posts]);
+            } else if (data.action == 'update') {
+              const _post = posts.find((post) => post.id == data.id);
+              const _postIndex = posts.indexOf(_post);
+              posts[_postIndex] = data;
+              setPosts([...posts]);
+            } else if (data.action == 'destroy') {
+              setPosts([...posts.filter((post) => post.id != data.id)]);
+            }
           }
         },
-        connected: () => {console.log('USER GROUP CONNECTED');},
-        disconnected: (e) => console.log('USER GROUP DISCONNECTED', e),
+        connected: ()=>{},
+        disconnected: ()=>{},
       },
     );
     return () => CableApp.cable.disconnect()
@@ -80,6 +63,7 @@ export default function GroupPostsComponent() {
     const title = document.querySelector(`input#title-${post.id}`);
     const trixEditor = document.querySelector(`[input="${post.id}"]`);
     document.querySelector(`div#form-${post.id}`).classList.toggle('hidden');
+    document.querySelector(`div#postContent-${post.id}`).classList.toggle('hidden');
     console.log('=====', trixEditor);
     title.value = post.title;
     trixEditor.value = post.content;
@@ -103,7 +87,7 @@ export default function GroupPostsComponent() {
       headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
     }).then(response => {
       if(response.status == 200) {
-        setPosts([...posts.filter(thisPost => thisPost.id != post.id)])
+        // setPosts([...posts.filter(thisPost => thisPost.id != post.id)])
         setNotices(['Post deleted successfuly.']);
       } else
         setAlerts(['Post not deleted.']);
@@ -116,20 +100,22 @@ export default function GroupPostsComponent() {
         <h1 className="font-semibold text-3xl mr-4 capitalize text-gray-600 mt-4">All Posts</h1>
         {posts.map(post =>
           (<div key={post.id} ref={postRef} className="mt-6 border rounded-[4px] shadow-sm" id={post.id}>
-            <div className='p-5 pb-2'>
-              <h1 className="font-medium text-3xl inline-block mb-3 text-gray-600 w-4/5 font-serif">{post.title}</h1>
-              <div className="mt-0 post text-sm text-gray-600">{Parser(post.content)}</div>
-              <span className="mt-4 block text-xs text-gray-400 font-normal">
-                <span>Last comment <TimeAgo date={post.last_activity} formatter={formatter} /></span> .
-                {post.user.id == currentUser.id && <><span className="mr-1 ml-1 inline-block cursor-pointer" onClick={(event) => editPost(event, post)}>Edit</span> .</>}
-                {post.user.id == currentUser.id && <><span className="mr-1 ml-1 inline-block cursor-pointer" onClick={(event) => deletePost(event, post)}>Delete</span> .</>}
-                <span className="mr-1 ml-1 inline-block">Created by <span className='capitalize'>{post.user.username}</span></span>
-              </span>
-            </div>
+            <div id={`postContent-${post.id}`} className='w-full'>
+              <div className='p-5 pb-2'>
+                <h1 className="font-medium text-3xl inline-block mb-3 text-gray-600 w-4/5 font-serif">{post.title}</h1>
+                <div className="mt-0 post text-sm text-gray-600 [&>*]:inline [&>pre]:bg-orange-100 [&>pre]:text-orange-400 [&>pre]:rounded-sm [&>pre]:px-1 [&>pre]:py-[1px]">{Parser(post.content)}</div>
+                <span className="mt-4 block text-xs text-gray-400 font-normal">
+                  <span>Last comment <TimeAgo date={post.last_activity} formatter={formatter} /></span> .
+                  {post.user.id == currentUser.id && <><span className="mr-1 ml-1 inline-block cursor-pointer" onClick={(event) => editPost(event, post)}>Edit</span> .</>}
+                  {post.user.id == currentUser.id && <><span className="mr-1 ml-1 inline-block cursor-pointer" onClick={(event) => deletePost(event, post)}>Delete</span> .</>}
+                  <span className="mr-1 ml-1 inline-block">Created by <span className='capitalize'>{post.user.username}</span></span>
+                </span>
+              </div>
 
-            <Link to={`/post/${post.id}`} state={{post: post}} className='bg-gray-50 block w-full px-5 py-3 mt-3 text-gray-400 hover:text-gray-500 rounded-b-[4px] border-t'>
-              <p className='truncate text-sm font-medium text-green-600'>View Post <span className='inline-block ml-2 text-xs'><FontAwesomeIcon icon={faArrowRight} /></span></p>
-            </Link>
+              <Link to={`/post/${post.id}`} state={{post: post}} className='bg-gray-50 block w-full px-5 py-3 mt-3 text-gray-400 hover:text-gray-500 rounded-b-[4px] border-t'>
+                <p className='truncate text-sm font-medium text-green-600'>View Post <span className='inline-block ml-2 text-xs'><FontAwesomeIcon icon={faArrowRight} /></span></p>
+              </Link>
+            </div>
             <div className='pt-0 p-4 hidden' id={`form-${post.id}`}>
               <EditPostForm id={group.id} postId={post.id} title={post.title} content={post.content} buttonTitle="Edit Post" />
             </div>

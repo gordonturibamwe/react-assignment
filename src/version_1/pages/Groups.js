@@ -93,17 +93,17 @@ export default function Groups() {
         imageHeight='500'
       />
       <Nav/>
-      <GroupFormModal/>
+      <GroupFormModal formTitle="Create New Group"/>
       <div className="max-w-4xl mx-auto  px-4 sm:px-6 lg:px-8 flex">
         <div className="w-full mx-auto pt-6">
           <h1 className="font-bold text-4xl">Groups</h1>
-          <div className="w-full flex justify-between items-center pt-6" data-controller="buttons">
+          <div className="w-full sm:flex justify-between items-center pt-6" data-controller="buttons">
             <span className="relative z-0 inline-flex shadow-sm rounded-sm" data-buttons-target="parent">
-              <button onClick={(event) => filterByNavigation(event, '/')} ref={filterButtonRefs.current[0]} className="-ml-px border-gray-300 bg-gray-200 hover:bg-gray-100 hover:text-gray text-gray-500 relative inline-flex items-center px-4 py-2 border text-xs font-medium focus:z-10 focus:outline-none focus:ring-0  rounded-l-[4px]">All groups </button>
-              <button onClick={(event) => filterByNavigation(event, '/?q=by-me')} ref={filterButtonRefs.current[1]} className="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-0 ">Created by me</button>
-              <button onClick={(event) => filterByNavigation(event, '/?q=where-am-member')} ref={filterButtonRefs.current[2]} className="-ml-px relative inline-flex items-center px-4 py-2 rounded-r-[4px] border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-0 ">Where I am member</button>
+              <button onClick={(event) => filterByNavigation(event, '/')} ref={filterButtonRefs.current[0]} className="-ml-px flex-none border-gray-300 bg-gray-200 hover:bg-gray-100 hover:text-gray text-gray-500 relative inline-flex items-center px-4 py-2 border text-xs font-medium focus:z-10 focus:outline-none focus:ring-0  rounded-l-[4px]">All groups </button>
+              <button onClick={(event) => filterByNavigation(event, '/?q=by-me')} ref={filterButtonRefs.current[1]} className="-ml-px flex-none relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-0 ">Created by me</button>
+              <button onClick={(event) => filterByNavigation(event, '/?q=where-am-member')} ref={filterButtonRefs.current[2]} className="-ml-px flex-none relative inline-flex items-center px-4 py-2 rounded-r-[4px] border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-0 ">Where I am member</button>
             </span>
-            <button onClick={() => setOpen(true)} className="rounded-[4px]  px-4 py-2 bg-green-600 hover:bg-green-700 border-green-800 text-white block text-sm font-medium shadow-sm">+ Create New Group </button>
+            <button onClick={() => setOpen(true)} className="rounded-[4px] w-full sm:w-auto mt-4 sm:mt-0  px-4 py-2 bg-green-600 hover:bg-green-700 border-green-800 text-white block text-sm font-medium shadow-sm">+ Create New Group </button>
           </div>
 
           <div className="bg-white shadow-xs overflow-hidden border rounded-md mt-6 border-gray-302">

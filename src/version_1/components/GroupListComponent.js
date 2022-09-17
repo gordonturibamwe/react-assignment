@@ -19,9 +19,9 @@ export default function GroupListComponent({...props}) {
   }
 
   return (
-    <li id={props.group.id} key={props.group.id} className="flex hover:bg-gray-50 flex-row items-center justify-between flex-basis pr-6">
+    <li id={props.group.id} key={props.group.id} className="sm:flex hover:bg-gray-50 flex-row items-center justify-between flex-basis pr-6">
       <Link to={`/group/${props.group.id}`} state={{group: group}} className="block hover:bg-gray-50 w-full">
-        <div className="px-4 py-6 sm:px-6">
+        <div className="px-4 sm:py-6 pt-6 sm:px-6">
           <div className="flex items-center justify-between">
             <h1 className="font-semibold text-2xl inline-block mb-2 text-gray-600">
               {props.group.name}
@@ -30,7 +30,7 @@ export default function GroupListComponent({...props}) {
             </h1>
           </div>
           <div className="mt-1 sm:flex sm:justify-between">
-            <div className="sm:flex">
+            <div className="flex">
               <p className="flex items-center text-xs text-gray-500 mr-2">{props.group.total_members} Members</p>
               <p className="flex items-center text-xs text-gray-500 mr-2">{props.group.total_posts} Posts</p>
               <p className="flex items-center text-xs text-gray-500"><span className='mr-1'>Last activity </span><TimeAgo date={props.group.last_activity} formatter={formatter} /></p>
