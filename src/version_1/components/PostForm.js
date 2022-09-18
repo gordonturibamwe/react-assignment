@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useContext, useLayoutEffect, useRef, useState } from 'react'
 import Trix from "trix";
 import { ReactTrixRTEInput, ReactTrixRTEToolbar } from "react-trix-rte";
 import { TOOLBAR_ACTION_OPTS } from '../helpers/constantsHelper';
@@ -7,43 +7,41 @@ import '../../App.css'
 import { AppContext } from '../../App';
 import { get, post } from '../helpers/apiCallsHelper';
 
-
 export default function PostForm({...props}) {
-  let [usernameRange, setUsernameRange] = useState({begin: 0, end: 0});
-  let pointRef = useRef([]);
-  let start = 0;
-  let end = 0;
-  const emojiRef = useRef(null);
-  const imgRef = useRef(null);
-  const usernameRef = useRef(null);
-  const titleRef = useRef(null);
-  const {
-    setuserLoggedIn,
-    setAlerts, setNotices,
-    groupMembers, setGroupMembers,
-    searchUsers, setUserchUsers
-  } = useContext(AppContext);
+  const [usernameRange, setUsernameRange] = useState({begin: 0, end: 0}); // tracking
+  const emojiRef = useRef(null); // for emojis in trixEditor input
+  const imgRef = useRef(null); // uploading images to server
+  const usernameRef = useRef(null); // Used to update username list on search
+  const titleRef = useRef(null); // updating title in the post form title
+  let trixEditor = null; // trixEditor input element
+  const [mentions, setMentions] = useState([]);
 
-  useLayoutEffect(() => {
+  const {
+    setUserLoggedIn, // boolean true if user logged in
+    setAlerts, setNotices, // setting alerts and notices, takes an array of strings
+    groupMembers, setGroupMembers, // group members with request_accepted == true
+    searchUsers, setUserchUsers // holds
+  } = useContext(AppContext); // application context to hold global app info
+
+  useLayoutEffect(() => { // add click event listener to emoji toolbar button
+    trixEditor = document.querySelector('trix-editor');
     const trixEmojiButton = document.querySelector('[data-trix-action="emoji"]');
     trixEmojiButton.addEventListener('click', () => emojiRef.current.classList.remove('hidden'));
   }, []);
 
   function trixEditorOnChange(event) {
     if(event.target.value.includes('@')) {
-      const trixEditor = document.querySelector('trix-editor');
       const range = trixEditor.editor.getSelectedRange();
-      if(usernameRange.begin == 0) usernameRange.begin = range[0] - 2;
-      usernameRange.end = range[1] + 1;
+      if(usernameRange.begin == 0) usernameRange.begin = range[0] - 1;
+      usernameRange.end = range[1];
       usernameRef.current.classList.remove('hidden');
     } else {
-      // tagUsernameToSearch = [];
       usernameRef.current.classList.add('hidden');
     }
   }
 
-  function taggingUsername(event, tagUsernameToSearch) {
-    console.log('@@---', usernameRange, pointRef.current);
+  function taggingUsername(event) {
+    console.log('::;', usernameRange)
     const trixEditor = document.querySelector('trix-editor');
     trixEditor.editor.setSelectedRange([usernameRange.begin, usernameRange.end]);
     trixEditor.editor.deleteInDirection("backward");
@@ -54,7 +52,9 @@ export default function PostForm({...props}) {
     console.log(event.target.textContent);
     // var attachment = new Trix.Attachment({ content: `<span class="rounded-full bg-red-600 text-white px-2 py-1 text-xs inline">${event.target.textContent}</span>` })
     // trixEditor.editor.insertAttachment(attachment)
+    setMentions([...mentions, event.target.getAttribute('id')]);
     usernameRef.current.classList.add('hidden');
+    console.log('mentions', mentions);
   }
 
   const onEmojiClick = (event, emojiObject) => {
@@ -79,6 +79,7 @@ export default function PostForm({...props}) {
         formData: {
           id: props.id,
           title: titleRef.current.value,
+          mentions: mentions.join(','),
           content: trixEditor.value,
         }
       }).then(response => {
@@ -86,6 +87,7 @@ export default function PostForm({...props}) {
           setNotices(['Post successfuly saved.']);
           trixEditor.value = ''
           titleRef.current.value = ''
+          setMentions([]);
         } else {
           setAlerts(response.data?.errors); // Display errors if registration is unsuccessful
         }
@@ -112,7 +114,7 @@ export default function PostForm({...props}) {
           setUserchUsers([...response.data.users]);
           console.log('sss', searchUsers);
           setGroupMembers([...groupMembers]);
-          setuserLoggedIn(true);
+          setUserLoggedIn(true);
         } else {
           setUserchUsers([]);
         }
@@ -160,12 +162,17 @@ export default function PostForm({...props}) {
         <div className="overflow-y-hidden bg-white absolute w-[184px] z-10 hidden top-[50%] left-[30px]" ref={usernameRef}>
           <ul role="list" className="divide-y divide-gray-200 border sm:rounded-[4px]">
             <li className="cursor-pointer">
-              <span onClick={taggingUsername} className="block hover:bg-gray-50 px-3 py-2 truncate text-sm font-medium text-green-600">
+              <span onClick={taggingUsername} id="cfdd2959-c400-43d6-8a17-603f4d61890e" className="block hover:bg-gray-50 px-3 py-2 truncate text-sm font-medium text-green-600">
                 Gordon
               </span>
             </li>
             <li className="cursor-pointer">
-              <span href="#" className="block hover:bg-gray-50 px-3 py-2 truncate text-sm font-medium text-green-600">
+              <span onClick={taggingUsername} id="8be84640-9cfb-42e6-934f-8e2e2d5fb3e5" className="block hover:bg-gray-50 px-3 py-2 truncate text-sm font-medium text-green-600">
+                Zhedra
+              </span>
+            </li>
+            <li className="cursor-pointer">
+              <span onClick={taggingUsername} id="785773d4-e7a6-4d59-8065-f93032b84e74" className="block hover:bg-gray-50 px-3 py-2 truncate text-sm font-medium text-green-600">
                 Jessica
               </span>
             </li>

@@ -11,7 +11,7 @@ export default function AlertComponent() {
     const interval = setTimeout(function(){
       setAlerts([]);
       clearTimeout(interval);
-    }, 13000);
+    }, 8000);
   }, [setAlerts]);
 
   function closeAlert(event) {

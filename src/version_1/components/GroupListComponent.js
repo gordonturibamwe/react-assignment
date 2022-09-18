@@ -24,7 +24,7 @@ export default function GroupListComponent({...props}) {
         <div className="px-4 sm:py-6 pt-6 sm:px-6">
           <div className="flex items-center justify-between">
             <h1 className="font-semibold text-2xl inline-block mb-2 text-gray-600">
-              {props.group.name}
+              {props.group.name} {currentUser.username}
               {props.group.user_id == currentUser.id && <span className="px-2 ml-2 inline-flex text-xs rounded-full bg-green-100 text-green-800 mt-1">Created by You</span>}
               {props.group.group_access == 'is_secret' && <span className="px-2 ml-2 inline-flex text-xs rounded-full bg-orange-100 text-orange-800 -mt-1">Secret Group</span>}
             </h1>

@@ -7,7 +7,7 @@ import { get, post, patch, destroy } from '../helpers/apiCallsHelper';
 
 export default function UsernameListComponent() {
   const {
-    setuserLoggedIn,
+    setUserLoggedIn,
     setAlerts, setNotices,
     group, setGroup,
     groupMembers, setGroupMembers,
@@ -32,7 +32,7 @@ export default function UsernameListComponent() {
           setUserchUsers([...response.data.users]);
           console.log('sss', searchUsers);
           setGroupMembers([...groupMembers]);
-          setuserLoggedIn(true);
+          setUserLoggedIn(true);
         } else {
           setUserchUsers([]);
         }
@@ -64,7 +64,7 @@ export default function UsernameListComponent() {
     }).then(response => {
       if(response.status == 200) {
         setGroupMembers([...response.data.members]);
-        setuserLoggedIn(true);
+        setUserLoggedIn(true);
       }
     });
   }

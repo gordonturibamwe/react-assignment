@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 export default function SecretGroupInvitesComponent({...props}) {
   const {
     currentUser, setCurrentUser,
-    setuserLoggedIn,
+    setUserLoggedIn,
     setAlerts, setNotices,
     userGroupRequests, setUserGroupRequests,
     groupInvites, setGroupInvites,
@@ -25,7 +25,7 @@ export default function SecretGroupInvitesComponent({...props}) {
     }).then(response => {
       if(response.status == 200) {
         setGroupInvites([...response.data.invites]);
-        setuserLoggedIn(true);
+        setUserLoggedIn(true);
       } else {
         setAlerts(arr => response.data.error ? [response.data.error] : response.data?.errors);
       }

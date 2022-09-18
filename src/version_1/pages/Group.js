@@ -15,11 +15,12 @@ import SecretGroupInvitesComponent from '../components/SecretGroupInvitesCompone
 import UsernameListComponent from '../components/UsernameListComponent';
 import SEO from '../components/SEO';
 import GroupPostsComponent from '../components/GroupPostsComponent';
+import {useNotificationsCable } from './..//helpers/ActionCableHelper';
 
 export default function Group() {
   const {
     currentUser, setCurrentUser,
-    setuserLoggedIn,
+    setUserLoggedIn,
     setAlerts, setNotices,
     open, setOpen,
     group, setGroup,
@@ -31,6 +32,8 @@ export default function Group() {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [] = useNotificationsCable();
+
 
   useLayoutEffect(() => {
     setGroup({...location.state.group});
@@ -40,7 +43,7 @@ export default function Group() {
     }).then(response => {
       if(response.status == 200) {
         setGroup({...response.data});
-        setuserLoggedIn(true);
+        setUserLoggedIn(true);
       } else {
         setAlerts(arr => response.data.error ? [response.data.error] : response.data?.errors);
         if(response.data.error == 'Not Found')
@@ -102,7 +105,7 @@ export default function Group() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className='grid grid-cols-4 gap-x-8 pt-6'>
             <div className='col-span-3 min-h-[350px]'>
-              <GroupFormModal action='update'/>
+              <GroupFormModal action='update' formTitle="Update Group Info" />
               <div className="flex flex-row w-full mt-6 items-center">
                 <h1 className="font-semibold text-4xl mr-4 capitalize text-gray-600">{group.name}</h1>
                 {currentUser.id == group.user_id && <button onClick={() => setOpen(true)} className="text-3xl inline-block text-green-600"><FontAwesomeIcon icon={faCog} /></button>}

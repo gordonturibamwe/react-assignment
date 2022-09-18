@@ -6,27 +6,16 @@ import Nav from '../components/Nav';
 import { get, post } from '../helpers/apiCallsHelper';
 import GroupListComponent from '../components/GroupListComponent';
 import SEO from '../components/SEO';
+import { useGroupsCable } from '../helpers/ActionCableHelper';
+import {useNotificationsCable } from './..//helpers/ActionCableHelper';
+
 
 export default function Groups() {
-  const {setCurrentUser, setuserLoggedIn, setAlerts, setNotices, currentUser, setOpen, CableApp, setGroup} = useContext(AppContext);
-  const [groups, setGroups] = useState([]);
+  const {setAlerts, setNotices, setOpen, groups} = useContext(AppContext);
   const filterButtonRefs = useRef([]);
   filterButtonRefs.current = [0,1,2].map((_, index) => filterButtonRefs.current[index] ?? createRef());
-  const [filter, setFilter] = useState('');
-
-  useLayoutEffect(() => {
-    get({
-      path: `all-groups${filter}`,
-      headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
-    }).then(response => {
-      if(response.status == 200) {
-        setGroups(groups => [...response.data['groups']]);
-        setuserLoggedIn(true);
-      } else {
-        setAlerts(arr => response.data.errors);
-      }
-    });
-  }, [filter]);
+  const [filter, setFilter] = useGroupsCable(); // custom userGroups hook
+  const [] = useNotificationsCable();
 
   const joinGroup = (event, groupId) => {
     post({
@@ -63,26 +52,20 @@ export default function Groups() {
     event.preventDefault();
   }
 
-  useEffect(() => { // CONNECTING ACTION CABLE TO GROUPSCHANNEL
-    CableApp.cable.subscriptions.create(
-      {channel: 'GroupsChannel'}, {
-        received: (data) => {
-          setCurrentUser(currentUser);
-          if(data['action'] == 'create') {
-            setGroups([data, ...groups]);
-          } else if(data['action'] == 'update') {
-            const _group = groups.find((gp) => gp.id == data.id);
-            const _groupIndex = groups.indexOf(_group);
-            groups[_groupIndex] = data;
-            setGroups([...groups]);
-          }
-        },
-      },
-    );
-    return () => CableApp.cable.disconnect()
-  }, [CableApp.subscriptions, groups, setGroups]);
+  const sendNotification = (event) => {
+    post({
+      path: `post-notification`,
+      headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
+    }).then(response => {
+      if(response.status == 200) {
+        console.log('SENT NOTICATION');
+      } else {
+        setAlerts(arr => response.data.errors);
+      }
+    });
 
-  //  loading ? <LoadingComponent/> :
+  }
+
   return(
     <div>
       <SEO
@@ -97,6 +80,7 @@ export default function Groups() {
       <div className="max-w-4xl mx-auto  px-4 sm:px-6 lg:px-8 flex">
         <div className="w-full mx-auto pt-6">
           <h1 className="font-bold text-4xl">Groups</h1>
+          <button onClick={sendNotification} className="rounded-[4px] w-full sm:w-auto mt-4 sm:mt-0  px-4 py-2 bg-green-600 hover:bg-green-700 border-green-800 text-white block text-sm font-medium shadow-sm">Notifications </button>
           <div className="w-full sm:flex justify-between items-center pt-6" data-controller="buttons">
             <span className="relative z-0 inline-flex shadow-sm rounded-sm" data-buttons-target="parent">
               <button onClick={(event) => filterByNavigation(event, '/')} ref={filterButtonRefs.current[0]} className="-ml-px flex-none border-gray-300 bg-gray-200 hover:bg-gray-100 hover:text-gray text-gray-500 relative inline-flex items-center px-4 py-2 border text-xs font-medium focus:z-10 focus:outline-none focus:ring-0  rounded-l-[4px]">All groups </button>

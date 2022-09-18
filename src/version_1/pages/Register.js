@@ -13,7 +13,7 @@ export default function Register() {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const repeatPasswordRef = useRef(null);
-  const {setAlerts, setNotices, setuserLoggedIn, setCurrentUser} = useContext(AppContext);
+  const {setAlerts, setNotices, setUserLoggedIn, setCurrentUser} = useContext(AppContext);
   const navigate = useNavigate();
 
   const registerAccount = (event) => {
@@ -34,7 +34,7 @@ export default function Register() {
       if(response.status == 200){
         localStorage.setItem('token', response.headers['authorization'].split('Bearer ')[1]);
         setCurrentUser(response.data);
-        setuserLoggedIn(true);
+        setUserLoggedIn(true);
         setNotices(arr => ['Registered sucessfully.']);
         navigate('/', {replace: true}); // redirect to <Groups/> after registration
       } else {

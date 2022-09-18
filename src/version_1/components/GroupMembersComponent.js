@@ -7,10 +7,10 @@ import { get, destroy } from '../helpers/apiCallsHelper';
 import { useNavigate } from 'react-router-dom';
 
 export default function GroupMembersComponent({...props}) {
-  // const {currentUser, setCurrentUser, setuserLoggedIn, setAlerts, setNotices, CableApp} = useContext(AppContext);
+  // const {currentUser, setCurrentUser, setUserLoggedIn, setAlerts, setNotices, CableApp} = useContext(AppContext);
   const {
     currentUser, setCurrentUser,
-    setuserLoggedIn,
+    setUserLoggedIn,
     setAlerts, setNotices,
     open, setOpen,
     group, setGroup,
@@ -29,7 +29,7 @@ export default function GroupMembersComponent({...props}) {
     }).then(response => {
       if(response.status == 200) {
         setGroupMembers([...response.data.members]);
-        setuserLoggedIn(true);
+        setUserLoggedIn(true);
       } else {
         setAlerts(arr => response.data.error ? [response.data.error] : response.data?.errors);
       }

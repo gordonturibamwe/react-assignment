@@ -6,7 +6,7 @@ import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { post } from '../helpers/apiCallsHelper';
 
 export default function GroupFormModal({...props}) {
-  const {open, setOpen, setAlerts, setNotices, setuserLoggedIn, setCurrentUser, currentUser, group, setGroup} = useContext(AppContext);
+  const {open, setOpen, setAlerts, setNotices, setUserLoggedIn, setCurrentUser, currentUser, group, setGroup} = useContext(AppContext);
   const groupNameRef = useRef(null);
   const isPublicRef = useRef(null);
   const isPrivateRef = useRef(null);
@@ -63,7 +63,7 @@ export default function GroupFormModal({...props}) {
         group.name = groupNameRef.current.value
         group.group_access = groupAccess
         setGroup({...group});
-        setuserLoggedIn(true);
+        setUserLoggedIn(true);
         setNotices(arr => [props.action == 'update' ? 'Group successfully update.' : 'Group successfully created.']);
         setOpen(false);
       } else {

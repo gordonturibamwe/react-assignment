@@ -16,7 +16,7 @@ export default function EditPostForm({...props}) {
   const usernameRef = useRef(null);
   const titleRef = useRef(null);
   const {
-    setuserLoggedIn,
+    setUserLoggedIn,
     setAlerts, setNotices,
     groupMembers, setGroupMembers,
     searchUsers, setUserchUsers,
@@ -104,7 +104,7 @@ export default function EditPostForm({...props}) {
           setUserchUsers([...response.data.users]);
           console.log('sss', searchUsers);
           setGroupMembers([...groupMembers]);
-          setuserLoggedIn(true);
+          setUserLoggedIn(true);
         } else {
           setUserchUsers([]);
         }

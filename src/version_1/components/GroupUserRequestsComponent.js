@@ -6,7 +6,7 @@ import { AppContext } from '../../App';
 import { get, patch, destroy } from '../helpers/apiCallsHelper';
 
 export default function GroupUserRequestsComponent({...props}) {
-  const {currentUser, setCurrentUser, setuserLoggedIn, setAlerts, setNotices, userGroupRequests, setUserGroupRequests} = useContext(AppContext);
+  const {currentUser, setCurrentUser, setUserLoggedIn, setAlerts, setNotices, userGroupRequests, setUserGroupRequests} = useContext(AppContext);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function GroupUserRequestsComponent({...props}) {
       console.log(response.data.group_requests);
       if(response.status == 200) {
         setUserGroupRequests([...response.data.group_requests]);
-        setuserLoggedIn(true);
+        setUserLoggedIn(true);
       } else {
         setAlerts(arr => response.data.error ? [response.data.error] : response.data?.errors);
       }

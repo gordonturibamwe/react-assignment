@@ -9,7 +9,7 @@ export default function Login() {
   const usernameEmailRef = useRef(null);
   const rememberMeRef = useRef(null);
   const passwordRef = useRef(null);
-  const {setAlerts, setNotices, setuserLoggedIn, setCurrentUser} = useContext(AppContext);
+  const {setAlerts, setNotices, setUserLoggedIn, setCurrentUser} = useContext(AppContext);
   const navigate = useNavigate();
 
   const login = (event) => {
@@ -30,7 +30,7 @@ export default function Login() {
       if(response.status == 200){
         localStorage.setItem('token', response.headers['authorization'].split('Bearer ')[1]);
         setCurrentUser(response.data);
-        setuserLoggedIn(true);
+        setUserLoggedIn(true);
         setNotices(arr => ['Logged in sucessfully.']);
         navigate('/', {replace: true}); // redirect to <Groups/> after registration
       } else {
