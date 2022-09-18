@@ -13,9 +13,7 @@ export default function GroupListComponent({...props}) {
 
     //TODO: DELETE THIS
   function onGroupClick(event, clickedGroup) { //  onClick={(event) => onGroupClick(event, props.group)}
-    console.log('rrrr', group, event)
     setGroup({...clickedGroup});
-    console.log('rrrr', group, event)
   }
 
   return (

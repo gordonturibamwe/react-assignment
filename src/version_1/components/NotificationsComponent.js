@@ -12,7 +12,7 @@ export default function NotificationsComponent() {
     const interval = setTimeout(function(){
       setNotifications([]);
       clearTimeout(interval);
-    }, 8000);
+    }, 3000);
   }, [setNotifications]);
 
   function closeAlert(event) {
@@ -22,8 +22,8 @@ export default function NotificationsComponent() {
   return (
     <div ref={animate}>
       <div className="alert-toast fixed z-[100] top-[80px] right-[13px] max-w-[250px] w-full">
-        {notifications.map((notification) => (
-          <span key={notification.recipient.id} className="close cursor-pointer mb-3 flex flex-row items-center justify-start w-full p-6 bg-orange-500 rounded shadow-md text-white" title="close" htmlFor="footertoast">
+        {notifications.map((notification, index) => (
+          <span key={index} className="close cursor-pointer mb-3 flex flex-row items-center justify-start w-full p-6 bg-orange-500 rounded shadow-md text-white" title="close" htmlFor="footertoast">
             <FontAwesomeIcon icon={faBell} className="mr-4 mt-[5px] text-lg" />
             <p className="opacity-80 text-sm">{notification.message}</p>
             <svg onClick={closeAlert} className="fill-current text-white absolute right-4 top-4 h-5" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">

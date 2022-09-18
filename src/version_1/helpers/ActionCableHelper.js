@@ -12,8 +12,6 @@ export const useNotificationsCable = () => {
           if(currentUser.id == data.recipient.id)
             setNotifications([...notifications, data]);
         },
-        connected: () => {console.log('NotificationsChannel')},
-        disconnected: () => {},
       },
     );
     return () => CableApp.cable.disconnect();

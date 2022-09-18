@@ -1,7 +1,6 @@
 import React from 'react'
 
 export default function GroupJoinButtonsComponent({...props}) {
-  console.log(props, props.group?.user_exists_in_group?.request_accepted );
   return (
     <div className='flex-none pb-4 sm:pb-0'>
       {/* BUTTONS FOR PUBLIC GROUP */}
