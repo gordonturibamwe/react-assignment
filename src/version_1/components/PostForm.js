@@ -1,4 +1,4 @@
-import React, { useContext, useLayoutEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Trix from "trix";
 import { ReactTrixRTEInput, ReactTrixRTEToolbar } from "react-trix-rte";
 import { TOOLBAR_ACTION_OPTS } from '../helpers/constantsHelper';
@@ -9,9 +9,10 @@ import { get, post } from '../helpers/apiCallsHelper';
 
 
 export default function PostForm({...props}) {
-  let [value, setValue] = useState();
-  let nameTagStartPoint;
-  let [users, setUsers] = useState([]);
+  let [usernameRange, setUsernameRange] = useState({begin: 0, end: 0});
+  let pointRef = useRef([]);
+  let start = 0;
+  let end = 0;
   const emojiRef = useRef(null);
   const imgRef = useRef(null);
   const usernameRef = useRef(null);
@@ -20,38 +21,40 @@ export default function PostForm({...props}) {
     setuserLoggedIn,
     setAlerts, setNotices,
     groupMembers, setGroupMembers,
-    searchUsers, setUserchUsers,
-    CableApp
+    searchUsers, setUserchUsers
   } = useContext(AppContext);
 
   useLayoutEffect(() => {
     const trixEmojiButton = document.querySelector('[data-trix-action="emoji"]');
-    trixEmojiButton.addEventListener('click', (event) => emojiRef.current.classList.remove('hidden'));
-  });
+    trixEmojiButton.addEventListener('click', () => emojiRef.current.classList.remove('hidden'));
+  }, []);
 
   function trixEditorOnChange(event) {
-    setValue(event.target.value);
     if(event.target.value.includes('@')) {
       const trixEditor = document.querySelector('trix-editor');
-      const v = trixEditor.editor.getSelectedRange()
-      console.log(v, nameTagStartPoint === null, value)
-      if(!nameTagStartPoint) nameTagStartPoint = v;
-      console.log('VALUE', nameTagStartPoint);
-      console.log('++=', trixEditor.editor.setSelectedRange([0, 4]))
-      // trixEditor.editor.deleteInDirection("backward");
-      // const pos = trixEditor.editor.getClientRectAtPosition(0);
-      // const ppp = trixEditor.editor.getSelectedRange();
-      // usernameRef.current.style.left = `${parseInt(125)}px` //`${parseInt(pos.x + ppp[0])}px`;
-      // usernameRef.current.style.top = `${parseInt(125)}px` //`${parseInt(pos.y + ppp[1] + 20)}px`;
+      const range = trixEditor.editor.getSelectedRange();
+      if(usernameRange.begin == 0) usernameRange.begin = range[0] - 2;
+      usernameRange.end = range[1] + 1;
       usernameRef.current.classList.remove('hidden');
-      // console.log('--', trixEditor.editor.getClientRectAtPosition(0), `${parseInt(pos.x + ppp[0])}px`);
-      // console.log('-->>', ppp);
-      // trixEditor.editor.insertHTML('<div>HERE IS UL</div>');
-      // trixEditor.editor.insertHTML(` <pre>${event.target.textContent}</pre> <div>, </div>`);
-      // console.log('--++',trixEditor.selectionStart, window.getSelection());
     } else {
+      // tagUsernameToSearch = [];
       usernameRef.current.classList.add('hidden');
     }
+  }
+
+  function taggingUsername(event, tagUsernameToSearch) {
+    console.log('@@---', usernameRange, pointRef.current);
+    const trixEditor = document.querySelector('trix-editor');
+    trixEditor.editor.setSelectedRange([usernameRange.begin, usernameRange.end]);
+    trixEditor.editor.deleteInDirection("backward");
+    // trixEditor.value = trixEditor.value.replaceAll(`@${tagUsernameToSearch}`, '');
+    trixEditor.editor.insertHTML(` <pre>${event.target.textContent}</pre> <div>, </div>`);
+    usernameRange.begin = 0;
+    usernameRange.end = 0;
+    console.log(event.target.textContent);
+    // var attachment = new Trix.Attachment({ content: `<span class="rounded-full bg-red-600 text-white px-2 py-1 text-xs inline">${event.target.textContent}</span>` })
+    // trixEditor.editor.insertAttachment(attachment)
+    usernameRef.current.classList.add('hidden');
   }
 
   const onEmojiClick = (event, emojiObject) => {
@@ -62,18 +65,9 @@ export default function PostForm({...props}) {
     trixEditor.editor.insertString(` ${emojiObject.emoji} `);
   };
 
-  function submitForm(event) {
+  const submitForm = (event) => {
     event.preventDefault();
     const trixEditor = document.querySelector('trix-editor');
-    console.log(trixEditor.editor, titleRef.current);
-    console.log(trixEditor.editor?.composition?.attachments);
-    console.log(trixEditor.editor);
-    console.log(JSON.stringify(trixEditor.editor));
-    console.log('-')
-    console.log(JSON.stringify(trixEditor.editor.document));
-    console.log('+++');
-    console.log(trixEditor.value);
-    console.log('PROPS', props);
     if (true)
       post({
         path: "create-post",
@@ -89,36 +83,26 @@ export default function PostForm({...props}) {
         }
       }).then(response => {
         if(response.status == 200){
-          setNotices(arr => ['Post successfuly saved.']);
+          setNotices(['Post successfuly saved.']);
           trixEditor.value = ''
           titleRef.current.value = ''
         } else {
-          setAlerts(arr => response.data?.errors); // Display errors if registration is unsuccessful
+          setAlerts(response.data?.errors); // Display errors if registration is unsuccessful
         }
       });
   }
 
-  function attachment(event) {
+  const attachment = (event) => {
     // imgRef.current.src = event['attachment'].attachment.fileObjectURL; // <~ Add image to this. Push it to cloud.
     const trixEditor = document.querySelector('trix-editor');
     console.log(trixEditor.editor);
   }
 
-  function taggingUsername(event) {
-    const trixEditor = document.querySelector('trix-editor');
-    trixEditor.editor.deleteInDirection("backward");
-    trixEditor.editor.insertHTML(` <pre>${event.target.textContent}</pre> <div>, </div>`);
-    console.log(event.target.textContent);
-    // var attachment = new Trix.Attachment({ content: `<span class="rounded-full bg-red-600 text-white px-2 py-1 text-xs inline">${event.target.textContent}</span>` })
-    // trixEditor.editor.insertAttachment(attachment)
-    usernameRef.current.classList.add('hidden');
-  }
-
-  function inviteUser(event) {
+  const inviteUser = (event) => {
     const value = event.target.value;
     if (value == '') setUserchUsers([]);
-    if(!value.match(/[a-zA-Z0-9]/)) return
-    else
+    if(!value.match(/[a-zA-Z0-9]/)) return;
+    else {
       get({
         path: `search-user/${value.replace('@', '')}`,
         headers: {headers: {'Authorization': `Bearer ${localStorage.getItem("token")}`}},
@@ -133,6 +117,7 @@ export default function PostForm({...props}) {
           setUserchUsers([]);
         }
       });
+    }
   }
 
   return (
@@ -199,4 +184,40 @@ export default function PostForm({...props}) {
 
     </div>
   )
+
+
+  // if(usernameRange.length == 0) setUsernameRange(range);
+  // console.log('====', range, usernameRange);
+  // if(tagUsernameToSearch.length == 0) tagUsernameToSearch[0] = trixEditor.editor.getSelectedRange()[0] - 2;
+  // else tagUsernameToSearch[1] = trixEditor.editor.getSelectedRange()[1] + 1;
+  // console.log('---', tagUsernameToSearch, trixEditor.editor.getSelectedRange());
+  // trixEditor.onkeypress = function(e) {
+  //   const char = String.fromCharCode(e.keyCode);
+  //   if (char != ' ') {
+  //     tagUsernameToSearch += char
+  //   // } else {
+  //   //   trixEditor.value = event.target.value.replaceAll(`@${tagUsernameToSearch}`, '');
+  //   }
+  // }
 }
+    // console.log(trixEditor.editor, titleRef.current);
+    // console.log(trixEditor.editor?.composition?.attachments);
+    // console.log(trixEditor.editor);
+    // console.log(JSON.stringify(trixEditor.editor));
+    // console.log('-')
+    // console.log(JSON.stringify(trixEditor.editor.document));
+    // console.log('+++');
+    // console.log(trixEditor.value);
+    // console.log('PROPS', props);
+
+
+      // trixEditor.editor.deleteInDirection("backward");
+      // const pos = trixEditor.editor.getClientRectAtPosition(0);
+      // const ppp = trixEditor.editor.getSelectedRange();
+      // usernameRef.current.style.left = `${parseInt(125)}px` //`${parseInt(pos.x + ppp[0])}px`;
+      // usernameRef.current.style.top = `${parseInt(125)}px` //`${parseInt(pos.y + ppp[1] + 20)}px`;
+      // console.log('--', trixEditor.editor.getClientRectAtPosition(0), `${parseInt(pos.x + ppp[0])}px`);
+      // console.log('-->>', ppp);
+      // trixEditor.editor.insertHTML('<div>HERE IS UL</div>');
+      // trixEditor.editor.insertHTML(` <pre>${event.target.textContent}</pre> <div>, </div>`);
+      // console.log('--++',trixEditor.selectionStart, window.getSelection());

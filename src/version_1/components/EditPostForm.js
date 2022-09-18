@@ -15,7 +15,6 @@ export default function EditPostForm({...props}) {
   const imgRef = useRef(null);
   const usernameRef = useRef(null);
   const titleRef = useRef(null);
-
   const {
     setuserLoggedIn,
     setAlerts, setNotices,
@@ -25,20 +24,14 @@ export default function EditPostForm({...props}) {
   } = useContext(AppContext);
 
   useEffect(() => {
-    // const trixEditor = document.querySelector(props.id);
     const trixEmojiButtons = document.querySelector('button[data-trix-action="emoji"]');
     const trixEmojiButton = document.querySelector(`div#emoji-${props.postId}`);
     trixEmojiButton.addEventListener('click', (event) => emojiRef.current.classList.remove('hidden'));
-    // titleRef.current.value = props.title;
-    // // trixEditor.editor.value = props.content;
-    // trixEditor.editor.loadHTML(props.content)
-    // console.log('---', editorRef.current, titleRef.current.value, trixEditor.editor.value)
   }, []);
 
-  function trixEditorOnChange(event) {
+  const trixEditorOnChange = (event) => {
     setValue(event.target.value);
     if(event.target.value.includes('@')) {
-      const trixEditor = document.querySelector(`[input="${props.postId}"]`);
       usernameRef.current.classList.remove('hidden');
     } else {
       usernameRef.current.classList.add('hidden');
@@ -47,25 +40,15 @@ export default function EditPostForm({...props}) {
 
   const onEmojiClick = (event, emojiObject) => {
     const trixEditor = document.querySelector(`[input="${props.postId}"]`);
-    // const cursorPosition = trixEditor.editor.getSelectedRange();
     emojiRef.current.classList.add('hidden');
+    // const cursorPosition = trixEditor.editor.getSelectedRange();
     // trixEditor.editor.setSelectedRange(cursorPosition);
     trixEditor.editor.insertString(` ${emojiObject.emoji} `);
   };
 
-  function submitForm(event) {
-    console.log('----', props.id)
+  const updatePost = (event) => {
     event.preventDefault();
-    const trixEditor = document.querySelector(`[input="${props.postId}"]`)
-    console.log(trixEditor, titleRef.current);
-    console.log(trixEditor.editor?.composition?.attachments);
-    console.log(trixEditor.editor);
-    console.log(JSON.stringify(trixEditor.editor));
-    console.log('-')
-    console.log(JSON.stringify(trixEditor.editor.document));
-    console.log('+++');
-    console.log(trixEditor.value);
-    console.log('PROPS', props);
+    const trixEditor = document.querySelector(`[input="${props.postId}"]`);
     if (true)
       patch({
         path: "update-post/" + props.postId,
@@ -91,13 +74,13 @@ export default function EditPostForm({...props}) {
       });
   }
 
-  function attachment(event) {
+  const attachment = (event) => {
     // imgRef.current.src = event['attachment'].attachment.fileObjectURL; // <~ Add image to this. Push it to cloud.
     const trixEditor = document.querySelector('trix-editor');
     console.log(trixEditor.editor);
   }
 
-  function taggingUsername(event) {
+  const taggingUsername = (event) => {
     const trixEditor = document.querySelector(`[input="${props.postId}"]`);
     trixEditor.editor.deleteInDirection("backward");
     trixEditor.editor.insertHTML(` <pre>${event.target.textContent}</pre> <div>, </div>`);
@@ -107,7 +90,7 @@ export default function EditPostForm({...props}) {
     usernameRef.current.classList.add('hidden');
   }
 
-  function inviteUser(event) {
+  const inviteUser = (event) => {
     const value = event.target.value;
     if (value == '') setUserchUsers([]);
     if(!value.match(/[a-zA-Z0-9]/)) return
@@ -139,7 +122,7 @@ export default function EditPostForm({...props}) {
 
   return (
     <div>
-      <form className='block w-full mt-6 relative' onSubmit={submitForm}>
+      <form className='block w-full mt-6 relative' onSubmit={updatePost}>
         <div className='mb-4'>
           <label htmlFor="title" className="sr-only">
             Email address
@@ -204,6 +187,24 @@ export default function EditPostForm({...props}) {
   )
 }
 
+// const trixEditor = document.querySelector(`[input="${props.postId}"]`);
+
+    // const trixEditor = document.querySelector(props.id);
+    // titleRef.current.value = props.title;
+    // // trixEditor.editor.value = props.content;
+    // trixEditor.editor.loadHTML(props.content)
+    // console.log('---', editorRef.current, titleRef.current.value, trixEditor.editor.value)
+
+// console.log('----', props.id)
+// console.log(trixEditor, titleRef.current);
+// console.log(trixEditor.editor?.composition?.attachments);
+// console.log(trixEditor.editor);
+// console.log(JSON.stringify(trixEditor.editor));
+// console.log('-')
+// console.log(JSON.stringify(trixEditor.editor.document));
+// console.log('+++');
+// console.log(trixEditor.value);
+// console.log('PROPS', props);
 
 
 // const v = trixEditor.editor.getSelectedRange();
